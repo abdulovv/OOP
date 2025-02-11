@@ -1,9 +1,10 @@
 package entities;
 
-import entities.user.User;
+import entities.bankMembers.User;
+import identification.ID;
 
 public class Account {
-    private int ID;
+    private ID ID;
     private User user;
 
 }
