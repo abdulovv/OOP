@@ -1,15 +1,26 @@
 package users;
 
-import finance.Account;
+import finance.FinanceAccount;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Client extends User {
-    List<Account> accounts = new ArrayList<>();
 
-    public Client(String fullName, String passportNumber, int id, String phone, String email) {
-        super(fullName, passportNumber, id, phone, email);
+public class Client extends User {
+    private List<FinanceAccount> accounts = new ArrayList<>();
+    private boolean verified;
+
+    public Client() {
+        super();
+    }
+
+    public Client(String fullName, String passportNumber, int id, String phone, String email, String login, String password) {
+        super(fullName, passportNumber, id, phone, email, login, password);
+    }
+
+    @Override
+    public int contextMenu() {
+        return 0;
     }
 
     public void openAccount() {
@@ -27,4 +38,6 @@ public class Client extends User {
     public void applyForSalaryProject() {
         //enterprise.registerSalaryProject(enterpriseId, this.id);
     }
+
+
 }

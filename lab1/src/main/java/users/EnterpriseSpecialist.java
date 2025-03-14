@@ -1,12 +1,22 @@
 package users;
 
 public class EnterpriseSpecialist extends User {
-    public EnterpriseSpecialist(String fullName, String passportNumber, int id, String phone, String email) {
-        super(fullName, passportNumber, id, phone, email);
+
+    public EnterpriseSpecialist() {
+        super();
+    }
+
+    public EnterpriseSpecialist(String fullName, String passportNumber, int id, String phone, String email, String login, String password) {
+        super(fullName, passportNumber, id, phone, email, login, password);
     }
 
     public void requestTransfer(String fromAccount, String toAccount, double amount) {
         //bank.processTransferRequest(fromAccount, toAccount, amount);
         ///System.out.println("Запрос на перевод средств отправлен.");
+    }
+
+    @Override
+    public int contextMenu() {
+        return 0;
     }
 }

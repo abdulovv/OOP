@@ -1,11 +1,13 @@
 package users;
 
-import lombok.Data;
-
 public class Admin extends User {
 
-    public Admin(String fullName, String passportNumber, int id, String phone, String email) {
-        super(fullName, passportNumber, id, phone, email);
+    public Admin() {
+        super();
+    }
+
+    public Admin(String fullName, String passportNumber, int id, String phone, String email, String login, String password) {
+        super(fullName, passportNumber, id, phone, email, login, password);
     }
 
     public void viewLogs(String logFilePath) {
@@ -14,5 +16,10 @@ public class Admin extends User {
 
     public void cancelAction(Client client) {
         //отмена действий
+    }
+
+    @Override
+    public int contextMenu() {
+        return 0;
     }
 }
