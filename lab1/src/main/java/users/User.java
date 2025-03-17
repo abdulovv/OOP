@@ -1,10 +1,8 @@
 package users;
+import bank.Bank;
 import jakarta.validation.constraints.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.security.KeyPair;
 
 
 @Setter
@@ -48,9 +46,4 @@ public abstract class User{
         this.login = login;
         this.password = password;
     }
-
-
-
-    public abstract int contextMenu();
-
 }

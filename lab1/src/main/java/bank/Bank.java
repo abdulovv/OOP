@@ -4,6 +4,7 @@ import finance.FinanceAccount;
 import finance.Loan;
 import finance.Transaction;
 import lombok.Getter;
+import users.Client;
 import users.User;
 
 import java.util.ArrayList;
@@ -23,6 +24,8 @@ public class Bank {
     private final List<Loan> loans = new ArrayList<Loan>();
     private final List<Transaction> transactions = new LinkedList<Transaction>();
 
+    private final List<Client> waitingRegUsers = new ArrayList<Client>();
+
     public Bank(String name, String BIC) {
         this.name = name;
         this.BIC = BIC;
@@ -40,5 +43,9 @@ public class Bank {
 
     public User authorizing(String login, String password) {
         return users.stream().filter(u -> u.getLogin().equals(login) && u.getPassword().equals(password)).findFirst().orElse(null);
+    }
+
+    public void addRegisterApplication(User user) {
+
     }
 }

@@ -102,7 +102,7 @@ public final class Forms {
         Set<ConstraintViolation<User>> violations = validator.validate(currentUser);
 
         if (!violations.isEmpty()) {
-            System.out.println("Объект не валиден:");
+            System.out.println("Данные введены с ошибкой:");
             for (ConstraintViolation<User> violation : violations) {
                 System.out.println(violation.getMessage());
             }
@@ -121,7 +121,7 @@ public final class Forms {
     public void personalDataForm(User currentUser, Bank currentBank) {
         scanner.nextLine();
         do {
-            System.out.print("Введите имя[10-50символов]:");
+            System.out.print("Введите ФИО[10-50символов]:");
             String fullName = scanner.nextLine();
             currentUser.setFullName(fullName);
 
@@ -147,5 +147,23 @@ public final class Forms {
 
             currentUser.setId(currentBank.getIdForNewClient());
         }while (!isValidUserData(currentUser, currentBank));
+    }
+
+    public User authorizeForm(Bank currentBank) {
+        scanner.nextLine();
+        System.out.println("==========АВТОРИЗАЦИЯ==========");
+
+        System.out.print("Введите логин[5-20символов A-Za-z,0-9]:");
+        String login = scanner.nextLine();
+
+        System.out.print("Введите пароль[5-20символов A-Za-z,0-9]:");
+        String password = scanner.nextLine();
+
+        User user = currentBank.authorizing(login, password);
+
+        if (user == null){
+            user = new Client("ERROR");
+        }
+        return user;
     }
 }

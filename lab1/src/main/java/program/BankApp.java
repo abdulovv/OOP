@@ -3,6 +3,7 @@ package program;
 import bank.Bank;
 import program.additionalClasses.Initializator;
 import program.additionalClasses.Forms;
+import program.additionalClasses.Menu;
 import users.*;
 
 import java.util.*;
@@ -18,17 +19,18 @@ public final class BankApp {
 
         public static List<Bank> banks = new ArrayList<Bank>();
         private static final Forms forms = new Forms();
+        private static final Menu menu = new Menu();
 
         public static void registerUser() {
             currentUser = forms.roleChooseForm();
             forms.personalDataForm(currentUser, currentBank);
 
-
             if(currentUser instanceof Client){
-                //bank.addApplication();
+                currentBank.addRegisterApplication(currentUser);
                 System.out.println(currentUser.getFullName() + ", заявка отправлена, ждите ее рассмотрения!");
                 currentBank.getUsers().add(currentUser);
             }
+            currentUser = null;
         }
 
         public static void chooseBank(){
@@ -36,13 +38,23 @@ public final class BankApp {
         }
 
         public static void authorize(){
+            currentUser = forms.authorizeForm(currentBank);
 
+            if (currentUser.getFullName().equals("ERROR")){
+                System.out.println("Неверный пароль или логин");
+            }else
+                System.out.println(currentUser.getFullName() + ", здравствуйте");
         }
 
         public static void clear(){
             System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
         }
 
+        public static void userMenu() {
+            if(currentUser instanceof Manager) {
+                menu.manager(currentBank, (Manager)currentUser);
+            }
+        }
     }//END CONTEXT
 
     public static void start() throws InterruptedException {
@@ -70,7 +82,7 @@ public final class BankApp {
         do{
             System.out.print(
                             "1. Авторизация\n" +
-                            "2. Регистрация нового клиента\n" +
+                            "2. Регистрация\n" +
                             "=============(Выход 0)============\n" +
                             "Ввод:"
                             );
@@ -109,8 +121,12 @@ public final class BankApp {
         Context.clear();
         Context.chooseBank();
         Context.authorize();
+
+        Context.userMenu();
     }
 
     //3 SLICE
+
+
 
 }

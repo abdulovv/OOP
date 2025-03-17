@@ -1,8 +1,8 @@
 package users;
 
-import interfaces.OperatorInterface;
+import interfaces.OperatorManagerInterface;
 
-public class Operator extends User implements OperatorInterface {
+public class Operator extends User implements OperatorManagerInterface {
 
     public Operator() {
         super();
@@ -28,11 +28,6 @@ public class Operator extends User implements OperatorInterface {
     public void confirmSalaryProject() {
         //salaryProject.confirm();
         //System.out.println("Зарплатный проект подтверждён.");
-    }
-
-    @Override
-    public int contextMenu() {
-        return 0;
     }
 
 }

@@ -1,5 +1,7 @@
 package users;
 
+import bank.Bank;
+
 public class EnterpriseSpecialist extends User {
 
     public EnterpriseSpecialist() {
@@ -15,8 +17,4 @@ public class EnterpriseSpecialist extends User {
         ///System.out.println("Запрос на перевод средств отправлен.");
     }
 
-    @Override
-    public int contextMenu() {
-        return 0;
-    }
 }

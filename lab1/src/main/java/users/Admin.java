@@ -1,5 +1,7 @@
 package users;
 
+import bank.Bank;
+
 public class Admin extends User {
 
     public Admin() {
@@ -18,8 +20,5 @@ public class Admin extends User {
         //отмена действий
     }
 
-    @Override
-    public int contextMenu() {
-        return 0;
-    }
+
 }

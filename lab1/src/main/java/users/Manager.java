@@ -1,7 +1,11 @@
 package users;
 
+import bank.Bank;
 import finance.Loan;
 import finance.Transaction;
+
+import java.util.List;
+import java.util.Scanner;
 
 public class Manager extends Operator{
 
@@ -13,26 +17,26 @@ public class Manager extends Operator{
         super(fullName, passportNumber, id, phone, email, login, password);
     }
 
+    public void PrintAllClients(Bank bank) {
+        System.out.println("Список клиентов:");
+        int i = 1;
+        for (User user : bank.getUsers()) {
+            if(user instanceof Client) {
+                System.out.println(i + "." + user.getFullName() + "\n");
+            }
+        }
+    }
+
     public void approveLoan(Loan loan) {
         //loan.approve();
         //System.out.println("Кредит одобрен.");
     }
 
-    /**
-     * Отклонение кредита.
-     *
-     * @param loan Кредит для отклонения
-     */
     public void rejectLoan(Loan loan) {
         //loan.reject();
         //System.out.println("Кредит отклонён.");
     }
 
-    /**
-     * Отмена операции, выполненной специалистом предприятия.
-     *
-     * @param transaction Транзакция для отмены
-     */
     public void cancelOperation(Transaction transaction) {
         //transaction.cancel();
         //System.out.println("Операция отменена.");
@@ -53,8 +57,50 @@ public class Manager extends Operator{
         //System.out.println("Зарплатный проект подтверждён.");
     }
 
-    @Override
-    public int contextMenu() {
-        return 0;
+    public void checkWaitingRegistrationClients(Bank bank) {
+        Client client = null;
+
+        Scanner scanner = new Scanner(System.in);
+        int choice = -1;
+
+        do {
+            System.out.println("Выберите клиента для рассмотрения(№)");
+
+            int i = 1;
+            for (Client c : bank.getWaitingRegUsers()) {
+                System.out.println("№" + i + ". " + c.getFullName());
+            }
+
+            try {
+                System.out.println("Ввод:");
+                choice = scanner.nextInt();
+            }catch (Exception e) {
+                System.out.println("Невернный ввод --> [" + scanner.nextLine() + "]");
+                continue;
+            }
+
+            try {
+                client = bank.getWaitingRegUsers().get(choice);
+            }catch (Exception e) {
+                System.out.println("\nНеверный номер --> [" + choice + "]\n");
+            }
+
+        }while (client == null);
+
+        System.out.println("\n\n Данные о клиенте:\n" + client.toString());
+
+        String input;
+        do {
+            System.out.println("Одобрить - y / отклонить - n");
+            input = scanner.nextLine();
+
+            if (input.equals("y")) {
+                bank.getWaitingRegUsers().remove(client);
+                bank.getUsers().add(client);
+            }
+
+        }while (!input.equals("n") && !input.equals("y"));
+
+        bank.getWaitingRegUsers().remove(client);
     }
 }

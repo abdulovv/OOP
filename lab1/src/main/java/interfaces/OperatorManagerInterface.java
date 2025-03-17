@@ -1,8 +1,6 @@
 package interfaces;
 
-import finance.Transaction;
-
-public interface OperatorInterface {
+public interface OperatorManagerInterface {
     void viewStatistics();
 
     void cancelTransaction();

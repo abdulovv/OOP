@@ -1,4 +1,9 @@
 package finance;
 
-public class Loan {
+public class Loan extends Applications {
+
+    public Loan(String info) {
+        super(info);
+    }
+
 }
