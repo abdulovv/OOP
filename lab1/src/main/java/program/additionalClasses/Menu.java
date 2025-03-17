@@ -17,7 +17,7 @@ public class Menu {
     public void manager(Bank bank, Manager manager) {
 
         do {
-            System.out.println(
+            System.out.print(
                     "1. Вывести клиентов\n" +
                             "2. Рассмотреть клиентов ждущих одобрение регистрации\n" +
                             "-------------------(ВЫХОД 0)-------------------\n" +

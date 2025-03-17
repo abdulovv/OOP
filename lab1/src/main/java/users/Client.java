@@ -14,7 +14,6 @@ import java.util.List;
 @Setter
 public class Client extends User {
     private final List<FinanceAccount> accounts = new ArrayList<>();
-    private boolean verified;
     private List<Applications> applications;
 
     public Client() {

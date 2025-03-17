@@ -162,6 +162,11 @@ public final class Forms {
         User user = currentBank.authorizing(login, password);
 
         if (user == null){
+            User notReg = currentBank.getWaitingRegClients().stream().filter(u -> u.getLogin().equals(login) && u.getPassword().equals(password)).findFirst().orElse(null);
+            if (notReg != null){
+                user = new Client("NOTAPPLY");
+            }
+
             user = new Client("ERROR");
         }
         return user;

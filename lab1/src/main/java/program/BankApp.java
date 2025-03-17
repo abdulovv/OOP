@@ -6,6 +6,7 @@ import program.additionalClasses.Forms;
 import program.additionalClasses.Menu;
 import users.*;
 
+import javax.print.DocFlavor;
 import java.util.*;
 
 
@@ -28,7 +29,7 @@ public final class BankApp {
             if(currentUser instanceof Client){
                 currentBank.addRegisterApplication(currentUser);
                 System.out.println(currentUser.getFullName() + ", заявка отправлена, ждите ее рассмотрения!");
-                currentBank.getUsers().add(currentUser);
+                currentBank.getWaitingRegClients().add((Client) currentUser);
             }
             currentUser = null;
         }
@@ -37,13 +38,19 @@ public final class BankApp {
             currentBank = forms.bankChooseForm(banks);
         }
 
-        public static void authorize(){
+        public static boolean authorize(){
             currentUser = forms.authorizeForm(currentBank);
 
             if (currentUser.getFullName().equals("ERROR")){
                 System.out.println("Неверный пароль или логин");
-            }else
+                return false;
+            } else if (currentUser.getFullName().equals("NOTAPPLY")) {
+                System.out.println("Ваша заявка еще не рассмотрена");
+                return false;
+            } else
                 System.out.println(currentUser.getFullName() + ", здравствуйте");
+
+            return true;
         }
 
         public static void clear(){

@@ -22,7 +22,7 @@ public class Manager extends Operator{
         int i = 1;
         for (User user : bank.getUsers()) {
             if(user instanceof Client) {
-                System.out.println(i + "." + user.getFullName() + "\n");
+                System.out.println(i++ + "." + user.getFullName() + "\n");
             }
         }
     }
@@ -58,7 +58,7 @@ public class Manager extends Operator{
     }
 
     public void checkWaitingRegistrationClients(Bank bank) {
-        Client client = null;
+        User client = null;
 
         Scanner scanner = new Scanner(System.in);
         int choice = -1;
@@ -67,12 +67,12 @@ public class Manager extends Operator{
             System.out.println("Выберите клиента для рассмотрения(№)");
 
             int i = 1;
-            for (Client c : bank.getWaitingRegUsers()) {
-                System.out.println("№" + i + ". " + c.getFullName());
+            for (User c : bank.getWaitingRegClients()) {
+                System.out.println("№" + i++ + ". " + c.getFullName());
             }
 
             try {
-                System.out.println("Ввод:");
+                System.out.print("Ввод:");
                 choice = scanner.nextInt();
             }catch (Exception e) {
                 System.out.println("Невернный ввод --> [" + scanner.nextLine() + "]");
@@ -80,7 +80,7 @@ public class Manager extends Operator{
             }
 
             try {
-                client = bank.getWaitingRegUsers().get(choice);
+                client = bank.getWaitingRegClients().get(--choice);
             }catch (Exception e) {
                 System.out.println("\nНеверный номер --> [" + choice + "]\n");
             }
@@ -89,18 +89,21 @@ public class Manager extends Operator{
 
         System.out.println("\n\n Данные о клиенте:\n" + client.toString());
 
+        scanner.nextLine();
         String input;
+
         do {
             System.out.println("Одобрить - y / отклонить - n");
+            System.out.print("Ввод:");
             input = scanner.nextLine();
 
             if (input.equals("y")) {
-                bank.getWaitingRegUsers().remove(client);
+                bank.getWaitingRegClients().remove(client);
                 bank.getUsers().add(client);
             }
 
         }while (!input.equals("n") && !input.equals("y"));
 
-        bank.getWaitingRegUsers().remove(client);
+        bank.getWaitingRegClients().remove(client);
     }
 }

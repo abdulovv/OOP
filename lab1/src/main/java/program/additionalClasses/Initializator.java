@@ -16,6 +16,8 @@ public final class Initializator {
         banks.get(0).getUsers().add(new Client("Vladislav Curik", "2394872154", banks.get(0).getIdForNewClient(), "+375295912338", "dodik@gmail.com", "vlados", "qwerty"));
         banks.get(0).getUsers().add(new Manager("Zahar Terekh", "8638263011", banks.get(0).getIdForNewClient(), "+375297107707", "zaha@gmail.com", "zahar", "qwerty"));
         banks.get(0).getUsers().add(new Admin("Sasha Abdulov", "3009129834", banks.get(0).getIdForNewClient(), "+375291479324", "sasha@gmail.com", "sasha", "qwerty"));
+
+
     }
 
 

@@ -4,6 +4,7 @@ import finance.FinanceAccount;
 import finance.Loan;
 import finance.Transaction;
 import lombok.Getter;
+import lombok.Setter;
 import users.Client;
 import users.User;
 
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.Queue;
 
 @Getter
+@Setter
 public class Bank {
     private final String LOG_FILEPATH = "logs.txt";
     private final String name;
@@ -24,7 +26,7 @@ public class Bank {
     private final List<Loan> loans = new ArrayList<Loan>();
     private final List<Transaction> transactions = new LinkedList<Transaction>();
 
-    private final List<Client> waitingRegUsers = new ArrayList<Client>();
+    private final List<User> waitingRegClients = new ArrayList<User>();
 
     public Bank(String name, String BIC) {
         this.name = name;
