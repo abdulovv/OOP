@@ -18,13 +18,14 @@ public class Manager extends Operator{
     }
 
     public void PrintAllClients(Bank bank) {
-        System.out.println("Список клиентов:");
+        System.out.println("==========================\nСписок клиентов:");
         int i = 1;
         for (User user : bank.getUsers()) {
             if(user instanceof Client) {
-                System.out.println(i++ + "." + user.getFullName() + "\n");
+                System.out.println(i++ + "." + user.getFullName());
             }
         }
+        System.out.println("==========================\n");
     }
 
     public void approveLoan(Loan loan) {
@@ -58,6 +59,11 @@ public class Manager extends Operator{
     }
 
     public void checkWaitingRegistrationClients(Bank bank) {
+        if(bank.getWaitingRegClients().isEmpty()) {
+            System.out.println("====================================\nЗаявок на одобрение регистрации нету\n====================================\n");
+            return;
+        }
+
         User client = null;
 
         Scanner scanner = new Scanner(System.in);
@@ -82,7 +88,7 @@ public class Manager extends Operator{
             try {
                 client = bank.getWaitingRegClients().get(--choice);
             }catch (Exception e) {
-                System.out.println("\nНеверный номер --> [" + choice + "]\n");
+                System.out.println("\nНеверный номер --> [" + ++choice + "]\n");
             }
 
         }while (client == null);

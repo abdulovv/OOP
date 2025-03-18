@@ -3,16 +3,12 @@ package program;
 import bank.Bank;
 import program.additionalClasses.Initializator;
 import program.additionalClasses.Forms;
-import program.additionalClasses.Menu;
+import program.additionalClasses.UserMenu;
 import users.*;
-
-import javax.print.DocFlavor;
 import java.util.*;
 
 
 public final class BankApp {
-    private static Scanner scanner = new Scanner(System.in);
-    private static int choice = -1;
 
     private static class Context{
         public static Bank currentBank = null;
@@ -20,7 +16,7 @@ public final class BankApp {
 
         public static List<Bank> banks = new ArrayList<Bank>();
         private static final Forms forms = new Forms();
-        private static final Menu menu = new Menu();
+        private static final UserMenu menu = new UserMenu();
 
         public static void registerUser() {
             currentUser = forms.roleChooseForm();
@@ -28,29 +24,27 @@ public final class BankApp {
 
             if(currentUser instanceof Client){
                 currentBank.addRegisterApplication(currentUser);
-                System.out.println(currentUser.getFullName() + ", заявка отправлена, ждите ее рассмотрения!");
+                System.out.println(currentUser.getFullName() + ", заявка отправлена, ждите ее рассмотрения!\n");
                 currentBank.getWaitingRegClients().add((Client) currentUser);
-            }
-            currentUser = null;
+            }else
+                currentBank.getUsers().add(currentUser);
         }
 
         public static void chooseBank(){
             currentBank = forms.bankChooseForm(banks);
         }
 
-        public static boolean authorize(){
+        public static void authorize(){
             currentUser = forms.authorizeForm(currentBank);
 
             if (currentUser.getFullName().equals("ERROR")){
                 System.out.println("Неверный пароль или логин");
-                return false;
             } else if (currentUser.getFullName().equals("NOTAPPLY")) {
                 System.out.println("Ваша заявка еще не рассмотрена");
-                return false;
             } else
-                System.out.println(currentUser.getFullName() + ", здравствуйте");
+                System.out.println("\n" + currentUser.getFullName() + ", здравствуйте");
 
-            return true;
+
         }
 
         public static void clear(){
@@ -60,6 +54,12 @@ public final class BankApp {
         public static void userMenu() {
             if(currentUser instanceof Manager) {
                 menu.manager(currentBank, (Manager)currentUser);
+            }else if (currentUser instanceof Client) {
+                menu.client(currentBank, (Client)currentUser);
+            }else if (currentUser instanceof Operator) {
+                menu.operator(currentBank, (Operator)currentUser);
+            }else if (currentUser instanceof  Admin) {
+                menu.admin(currentBank, (Admin)currentUser);
             }
         }
     }//END CONTEXT
@@ -72,20 +72,26 @@ public final class BankApp {
             resultOfStartMenu = startMenu();
             switch (resultOfStartMenu) {
                 case "AUTHORIZATION":
-                    authorizationMenu();
+                    if (authorizationMenu()){
+                        Context.userMenu();
+                    }
                     break;
                 case "REGISTRATION":
                     registerMenu();
                     break;
             }
+
+            Context.currentUser = null;
+            Context.currentBank = null;
         }while (!resultOfStartMenu.equals("EXIT"));
+
         Thread.sleep(1200);
         System.out.println("Программа завершена");
     }
 
-    //1 SLICE
     public static String startMenu(){
-        choice = -1;
+        int choice = -1;
+        Scanner scanner = new Scanner(System.in);
         do{
             System.out.print(
                             "1. Авторизация\n" +
@@ -116,7 +122,7 @@ public final class BankApp {
         return "EXIT";
     }
 
-    //2 SLICE
+    //2
 
     public static void registerMenu(){
         Context.clear();
@@ -124,16 +130,11 @@ public final class BankApp {
         Context.registerUser();
     }
 
-    private static void authorizationMenu() {
+    private static boolean authorizationMenu() {
         Context.clear();
         Context.chooseBank();
         Context.authorize();
 
-        Context.userMenu();
+        return !(Context.currentUser.getFullName().equals("ERROR") || Context.currentUser.getFullName().equals("NOTAPPLY"));
     }
-
-    //3 SLICE
-
-
-
 }

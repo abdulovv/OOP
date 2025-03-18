@@ -3,15 +3,13 @@ package bank;
 import finance.FinanceAccount;
 import finance.Loan;
 import finance.Transaction;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import users.Client;
 import users.User;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 @Getter
 @Setter
@@ -49,5 +47,24 @@ public class Bank {
 
     public void addRegisterApplication(User user) {
 
+    }
+
+    public FinanceAccount createAccount(Client client) {
+        Random random = new Random();
+        int accountID = 0;
+        FinanceAccount accountWithOccupiedID;
+        do{
+            accountID = random.nextInt(11111,99999);
+            int finalAccountID = accountID;
+            accountWithOccupiedID = accounts.stream().filter(a -> a.getAccountID() == finalAccountID).findFirst().orElse(null);
+        }while (accountWithOccupiedID != null);
+
+        int balance = 0;
+        int clientID = client.getId();
+
+        FinanceAccount newFinanceAccount = FinanceAccount.builder().accountID(accountID).balance(balance).clientID(clientID).build();
+
+        accounts.add(newFinanceAccount);
+        return newFinanceAccount;
     }
 }

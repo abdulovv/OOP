@@ -1,6 +1,7 @@
 package program.additionalClasses;
 
 import bank.Bank;
+import finance.FinanceAccount;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -12,14 +13,13 @@ import java.util.Scanner;
 import java.util.Set;
 
 public final class Forms {
-    private static int choice;
-    private static Scanner scanner = new Scanner(System.in);
-
     public Forms(){}
 
     public Bank bankChooseForm(List<Bank> banks) {
+        int choice = -1;
+        Scanner scanner = new Scanner(System.in);
+
         Bank choosenBank = null;
-        choice = -1;
         do{
             System.out.println("Выберите банк(№):");
             for (int i = 0; i < banks.size(); i++) {
@@ -43,9 +43,11 @@ public final class Forms {
     }
 
     public User roleChooseForm() {
+        int choice = -1;
+        Scanner scanner = new Scanner(System.in);
+
         User user = null;
         boolean flag = false;
-        choice = -1;
         do{
             System.out.println(
                     "Выберите роль(№):\n" +
@@ -102,10 +104,11 @@ public final class Forms {
         Set<ConstraintViolation<User>> violations = validator.validate(currentUser);
 
         if (!violations.isEmpty()) {
-            System.out.println("Данные введены с ошибкой:");
+            System.out.println("\n----------------------------------\nДанные введены с ошибкой:");
             for (ConstraintViolation<User> violation : violations) {
                 System.out.println(violation.getMessage());
             }
+            System.out.print("----------------------------------\n");
             return false;
         }
 
@@ -119,29 +122,31 @@ public final class Forms {
     }
 
     public void personalDataForm(User currentUser, Bank currentBank) {
-        scanner.nextLine();
+        int choice = -1;
+        Scanner scanner = new Scanner(System.in);
+
         do {
-            System.out.print("Введите ФИО[10-50символов]:");
+            System.out.print("\nВведите ФИО[10-50символов]:");
             String fullName = scanner.nextLine();
             currentUser.setFullName(fullName);
 
-            System.out.print("Введите номер паспорта[10цифр]:");
+            System.out.print("\nВведите номер паспорта[10цифр]:");
             String passportNumber = scanner.nextLine();
             currentUser.setPassportNumber(passportNumber);
 
-            System.out.print("Введите номер телефона[+375(XX)XXXXXXX]:");
+            System.out.print("\nВведите номер телефона[+375(XX)XXXXXXX]:");
             String number = scanner.nextLine();
             currentUser.setPhone(number);
 
-            System.out.print("Введите email[name@name.teg]:");
+            System.out.print("\nВведите email[name@name.teg]:");
             String email = scanner.nextLine();
             currentUser.setEmail(email);
 
-            System.out.print("Введите логин[5-20символов A-Za-z,0-9]:");
+            System.out.print("\nВведите логин[5-20символов A-Za-z,0-9]:");
             String login = scanner.nextLine();
             currentUser.setLogin(login);
 
-            System.out.print("Введите пароль[5-20символов A-Za-z,0-9]:");
+            System.out.print("\nВведите пароль[5-20символов A-Za-z,0-9]:");
             String password = scanner.nextLine();
             currentUser.setPassword(password);
 
@@ -150,7 +155,10 @@ public final class Forms {
     }
 
     public User authorizeForm(Bank currentBank) {
-        scanner.nextLine();
+        int choice = -1;
+        Scanner scanner = new Scanner(System.in);
+
+
         System.out.println("==========АВТОРИЗАЦИЯ==========");
 
         System.out.print("Введите логин[5-20символов A-Za-z,0-9]:");
@@ -163,12 +171,47 @@ public final class Forms {
 
         if (user == null){
             User notReg = currentBank.getWaitingRegClients().stream().filter(u -> u.getLogin().equals(login) && u.getPassword().equals(password)).findFirst().orElse(null);
-            if (notReg != null){
-                user = new Client("NOTAPPLY");
-            }
 
-            user = new Client("ERROR");
+            user = notReg != null ? new Client("NOTAPPLY") : new Client("ERROR");
         }
         return user;
     }
+
+    public FinanceAccount financeAccountChooseForm(Client client) {
+        int choice = -1;
+        Scanner scanner = new Scanner(System.in);
+
+        if (client.getAccounts().isEmpty()){
+            System.out.println("Счетов не найдено");
+            return null;
+        }
+
+        FinanceAccount financeAccount = null;
+
+        do {
+            System.out.println("Выберите счёт(№)");
+
+            int i = 1;
+            for (FinanceAccount a : client.getAccounts()) {
+                System.out.println("№" + i++ + ". ID:" + a.getAccountID() + ", Balance:" + a.getBalance());
+            }
+
+            try {
+                System.out.print("Ввод:");
+                choice = scanner.nextInt();
+            }catch (Exception e) {
+                System.out.println("Невернный ввод --> [" + scanner.nextLine() + "]");
+                continue;
+            }
+
+            try {
+                financeAccount = client.getAccounts().get(--choice);
+            }catch (Exception e) {
+                System.out.println("\nНеверный номер --> [" + choice + "]\n");
+            }
+
+        }while (financeAccount == null);
+        return financeAccount;
+    }
+
 }

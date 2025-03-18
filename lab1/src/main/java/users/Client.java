@@ -15,6 +15,8 @@ import java.util.List;
 public class Client extends User {
     private final List<FinanceAccount> accounts = new ArrayList<>();
     private List<Applications> applications;
+    private FinanceAccount mainAccount = new FinanceAccount(id,id,10000,true);
+
 
     public Client() {
         super();
@@ -32,12 +34,25 @@ public class Client extends User {
     }
 
 
-    public void openAccount() {
-        //bank.createAccount(accountNumber);
+    public void openFinanceAccount(Bank bank) {
+        FinanceAccount newFinanceAccount = bank.createAccount(this);
+        accounts.add(newFinanceAccount);
+        System.out.println("-----------------------\nНовый счет был открыт(ID:"+ newFinanceAccount.getAccountID() +")\n-----------------------");
     }
 
-    public void closeAccount(String accountNumber) {
-        //
+    public void closeAccount(FinanceAccount financeAccount) {
+        mainAccount.topUpBalance(financeAccount.getBalance());
+        accounts.remove(financeAccount);
+    }
+
+    public void printAllAccounts() {
+        int i = 1;
+        System.out.println("===========================================");
+        System.out.println("MAIN ACCOUNT:" + mainAccount.toString() + "\n");
+        for (FinanceAccount financeAccount : accounts) {
+            System.out.println(i++ + ". " + financeAccount.toString());
+        }
+        System.out.println("===========================================");
     }
 
     public void applyForLoan() {
