@@ -9,6 +9,7 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import users.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
@@ -209,12 +210,40 @@ public final class Forms {
         return financeAccount;
     }
 
-    public Transaction transactionForm(Bank currentBank, Client client) {
+    public FinanceAccount financeAccountChooseForm(Bank bank) {
+        int choice = -1;
+        Scanner scanner = new Scanner(System.in);
+
+        FinanceAccount financeAccount = null;
+
+        do {
+            System.out.println("Выберите счёт(№)");
+
+            int i = 1;
+            for (FinanceAccount a : bank.getAccounts()) {
+                System.out.println("№" + i++ + ". ID:" + a.getAccountID() + ", Balance:" + a.getBalance() + ", owner:" + bank.findClientByID(a.getClientID()).getFullName());
+            }
+
+            try {
+                System.out.print("Ввод:");
+                choice = scanner.nextInt();
+            }catch (Exception e) {
+                System.out.println("Невернный ввод --> [" + scanner.nextLine() + "]");
+                continue;
+            }
+
+            try {
+                financeAccount = bank.getAccounts().get(--choice);
+            }catch (Exception e) {
+                System.out.println("\nНеверный номер --> [" + choice + "]\n");
+            }
+
+        }while (financeAccount == null);
+        return financeAccount;
+    }
+
+    public Transaction createTransactionForm(Bank currentBank, Client client) {
         FinanceAccount financeAccountFROM = financeAccountChooseForm(client);
-
-        if (financeAccountFROM == null){
-
-        }
 
         int accountID = -1;
         Scanner scanner = new Scanner(System.in);
@@ -275,5 +304,85 @@ public final class Forms {
         }while (!success);
 
         return new Transaction(financeAccountFROM, financeAccountTO, amount);
+    }
+
+    public Transaction transactionChooseForm(Bank bank) {
+        int choice = -1;
+        Scanner scanner = new Scanner(System.in);
+
+        Transaction transaction = null;
+
+        if (bank.getTransactions().isEmpty()) {
+            System.out.println("Транзакций еще не осуществлялось");
+            return null;
+        }
+
+        do {
+            System.out.println("Выберите транзакцию(№), для отмены введите 0");
+
+            int i = 1;
+            for (Transaction t : bank.getTransactions()) {
+                System.out.println("№" + i++ + ". " + t.getInfo());
+            }
+
+            try {
+                System.out.print("Ввод:");
+                choice = scanner.nextInt();
+            }catch (Exception e) {
+                System.out.println("Невернный ввод --> [" + scanner.nextLine() + "]");
+                continue;
+            }
+
+            if (choice == 0) {
+                System.out.println("Отмена действия");
+                return null;
+            }
+
+            try {
+                transaction = bank.getTransactions().get(--choice);
+            }catch (Exception e) {
+                System.out.println("\nНеверный номер --> [" + choice + "]\n");
+            }
+
+        }while (transaction == null);
+        return transaction;
+    }
+
+    public User neededRefreshUsersForm(Bank bank) {
+        int choice = -1;
+        Scanner scanner = new Scanner(System.in);
+
+        User user = null;
+
+        do {
+            System.out.println("Выберите пользователя(№), для отмены введите 0");
+
+            int i = 1;
+            List<User> list = bank.getUsers().stream().filter(u1 -> u1 instanceof Operator && ((Operator) u1).isCancel()).toList();
+            for (User o : list) {
+                System.out.println("№" + i++ + ". " + o.getFullName() + ", " + o.getClass().toString());
+            }
+
+            try {
+                System.out.print("Ввод:");
+                choice = scanner.nextInt();
+            }catch (Exception e) {
+                System.out.println("Невернный ввод --> [" + scanner.nextLine() + "]");
+                continue;
+            }
+
+            if (choice == 0) {
+                System.out.println("Отмена действия");
+                return null;
+            }
+
+            try {
+                user = list.get(--choice);
+            }catch (Exception e) {
+                System.out.println("\nНеверный номер --> [" + choice + "]\n");
+            }
+
+        }while (user == null);
+        return user;
     }
 }

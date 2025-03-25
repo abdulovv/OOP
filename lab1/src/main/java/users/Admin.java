@@ -1,5 +1,8 @@
 package users;
 
+import bank.Bank;
+import finance.Transaction;
+
 public class Admin extends User {
 
     public Admin(int idForNewUser) {
@@ -14,9 +17,17 @@ public class Admin extends User {
         //вывод логов, содержащихся в банке
     }
 
-    public void cancelAction(Client client) {
-        //отмена действий
+    public void cancelAction(Bank bank, Transaction transaction) {
+        if (transaction != null){
+            bank.cancelTransaction(transaction);
+        }
     }
 
-
+    public void refreshOptions(User user) {
+        if (user instanceof Manager){
+            ((Manager) user).setCancel(false);
+        }else{
+            ((Operator) user).setCancel(false);
+        }
+    }
 }

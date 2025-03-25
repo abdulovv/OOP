@@ -56,7 +56,7 @@ public class Bank {
         getWaitingRegClients().add((Client) user);
     }
 
-    public FinanceAccount createAccount(Client client) {
+    public FinanceAccount openAccount(Client client) {
         Random random = new Random();
         int accountID = 0;
         FinanceAccount accountWithOccupiedID;
@@ -72,6 +72,8 @@ public class Bank {
         FinanceAccount newFinanceAccount = FinanceAccount.builder().accountID(accountID).balance(balance).clientID(clientID).build();
 
         accounts.add(newFinanceAccount);
+        System.out.println("-----------------------\nНовый счет был открыт(ID:"+ newFinanceAccount.getAccountID() +")\n-----------------------");
+
         return newFinanceAccount;
     }
 
@@ -114,4 +116,19 @@ public class Bank {
         System.out.println("======================================");
         transactions.remove(transaction);
     }
+
+    public Client findClientByID(int clientID) {
+        return (Client) (users.stream().filter(u -> u.getId() == clientID).findFirst().orElse(null));
+    }
+
+    public void closeAccount(FinanceAccount financeAccount) {
+        FinanceAccount mainFinanceAccount = findClientByID(financeAccount.getClientID()).getMainAccount();
+        mainFinanceAccount.increaseBalance(financeAccount.getBalance());
+
+        accounts.remove(financeAccount);
+        System.out.println("======================================\n");
+        System.out.println("Счет (ID " + financeAccount.getAccountID() + ") успешно закрыт!");
+        System.out.println("======================================");
+    }
+
 }

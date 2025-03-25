@@ -12,7 +12,7 @@ public class EnterpriseSpecialist extends User {
 
     public void requestTransfer(String fromAccount, String toAccount, double amount) {
         //bank.processTransferRequest(fromAccount, toAccount, amount);
-        ///System.out.println("Запрос на перевод средств отправлен.");
+        //System.out.println("Запрос на перевод средств отправлен.");
     }
 
 }

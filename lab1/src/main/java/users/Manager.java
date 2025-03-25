@@ -1,6 +1,7 @@
 package users;
 
 import bank.Bank;
+import finance.FinanceAccount;
 import finance.Loan;
 import finance.Transaction;
 
@@ -47,9 +48,8 @@ public class Manager extends Operator{
     }
 
 
-    public void cancelTransaction(Transaction transaction) {
-        //transaction.cancel();
-        //System.out.println("Транзакция " + transaction.getTransactionId() + " отменена.");
+    public void cancelTransaction(Bank bank, Transaction transaction) {
+        super.cancelTransaction(bank, transaction);
     }
 
     public void confirmSalaryProject() {
@@ -111,4 +111,15 @@ public class Manager extends Operator{
 
         bank.getWaitingRegClients().remove(client);
     }
+
+    public void lockClientAccount(FinanceAccount financeAccount) {
+        financeAccount.setLocked(true);
+        System.out.println("=========================================\nСчет с номером (ID " + financeAccount.getAccountID() + ") заблокирован!\n=========================================");
+    }
+
+    public void unlockClientAccount(FinanceAccount financeAccount) {
+        financeAccount.setLocked(false);
+        System.out.println("=========================================\nСчет с номером (ID " + financeAccount.getAccountID() + ") разблокирован!\n=========================================");
+    }
+
 }
