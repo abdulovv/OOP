@@ -3,6 +3,7 @@ package users;
 import bank.Bank;
 import finance.Applications;
 import finance.FinanceAccount;
+import finance.Transaction;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -14,23 +15,26 @@ import java.util.List;
 @Setter
 public class Client extends User {
     private final List<FinanceAccount> accounts = new ArrayList<>();
-    private List<Applications> applications;
-    private FinanceAccount mainAccount = new FinanceAccount(id,id,10000,true);
+    private FinanceAccount mainAccount;
 
 
-    public Client() {
+    public Client(Bank currentBank) {
         super();
-        applications = new ArrayList<Applications>();
+        this.id = currentBank.getIdForNewClient();
+        mainAccount = new FinanceAccount(10000+id,id,10000,false, false);
+        accounts.add(mainAccount);
+        currentBank.getAccounts().add(mainAccount);
     }
 
     public Client(String error) {
         this.fullName = error;
-        applications = new ArrayList<Applications>();
     }
 
-    public Client(String fullName, String passportNumber, int id, String phone, String email, String login, String password) {
+    public Client(String fullName, String passportNumber, int id, String phone, String email, String login, String password, Bank currentBank) {
         super(fullName, passportNumber, id, phone, email, login, password);
-        applications = new ArrayList<Applications>();
+        mainAccount = new FinanceAccount(10000+id,id,10000,false, false);
+        accounts.add(mainAccount);
+        currentBank.getAccounts().add(mainAccount);
     }
 
 
@@ -41,16 +45,16 @@ public class Client extends User {
     }
 
     public void closeAccount(FinanceAccount financeAccount) {
-        mainAccount.topUpBalance(financeAccount.getBalance());
+        mainAccount.increaseBalance(financeAccount.getBalance());
         accounts.remove(financeAccount);
     }
 
     public void printAllAccounts() {
         int i = 1;
         System.out.println("===========================================");
-        System.out.println("MAIN ACCOUNT:" + mainAccount.toString() + "\n");
+        System.out.println("MAIN ACCOUNT WITH ID " + mainAccount.getAccountID() + "\n");
         for (FinanceAccount financeAccount : accounts) {
-            System.out.println(i++ + ". " + financeAccount.toString());
+            System.out.println(i++ + ". " + financeAccount.toString() );
         }
         System.out.println("===========================================");
     }
@@ -63,9 +67,6 @@ public class Client extends User {
         //enterprise.registerSalaryProject(enterpriseId, this.id);
     }
 
-    public void addApplication(Applications application) {
-        applications.add(application);
-    }
 
     @Override
     public String toString() {
@@ -73,7 +74,20 @@ public class Client extends User {
             "  Fullname: " + fullName + "\n" +
             "  Email:" + email + '\n' +
             "  Phone:" + phone + '\n' +
-            "  Passport number:" + passportNumber
+            "  Passport number:" + passportNumber + '\n' +
+            "  ID:" + id
         );
+    }
+
+    public void freezeFinanceAccount(FinanceAccount financeAccount) {
+        financeAccount.setFrozen(true);
+    }
+
+    public void unfreezeFinanceAccount(FinanceAccount financeAccount) {
+        financeAccount.setFrozen(false);
+    }
+
+    public void createTransaction(Bank currentBank, Transaction transaction) {
+        currentBank.performTransaction(transaction);
     }
 }

@@ -19,13 +19,13 @@ public final class BankApp {
         private static final UserMenu menu = new UserMenu();
 
         public static void registerUser() {
-            currentUser = forms.roleChooseForm();
+            currentUser = forms.roleChooseForm(currentBank);
             forms.personalDataForm(currentUser, currentBank);
 
             if(currentUser instanceof Client){
                 currentBank.addRegisterApplication(currentUser);
                 System.out.println(currentUser.getFullName() + ", заявка отправлена, ждите ее рассмотрения!\n");
-                currentBank.getWaitingRegClients().add((Client) currentUser);
+
             }else
                 currentBank.getUsers().add(currentUser);
         }

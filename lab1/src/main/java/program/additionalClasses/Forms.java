@@ -2,6 +2,7 @@ package program.additionalClasses;
 
 import bank.Bank;
 import finance.FinanceAccount;
+import finance.Transaction;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -11,6 +12,7 @@ import users.*;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public final class Forms {
     public Forms(){}
@@ -42,7 +44,7 @@ public final class Forms {
         return choosenBank;
     }
 
-    public User roleChooseForm() {
+    public User roleChooseForm(Bank currentBank ) {
         int choice = -1;
         Scanner scanner = new Scanner(System.in);
 
@@ -68,23 +70,23 @@ public final class Forms {
 
             switch (choice) {
                 case 1:
-                    user = new Client();
+                    user = new Client(currentBank);
                     flag = true;
                     break;
                 case 2:
-                    user = new Manager();
+                    user = new Manager(currentBank.getIdForNewClient());
                     flag = true;
                     break;
                 case 3:
-                    user = new Operator();
+                    user = new Operator(currentBank.getIdForNewClient());
                     flag = true;
                     break;
                 case 4:
-                    user = new Admin();
+                    user = new Admin(currentBank.getIdForNewClient());
                     flag = true;
                     break;
                 case 5:
-                    user = new EnterpriseSpecialist();
+                    user = new EnterpriseSpecialist(currentBank.getIdForNewClient());
                     flag = true;
                     break;
                 default:
@@ -149,8 +151,6 @@ public final class Forms {
             System.out.print("\nВведите пароль[5-20символов A-Za-z,0-9]:");
             String password = scanner.nextLine();
             currentUser.setPassword(password);
-
-            currentUser.setId(currentBank.getIdForNewClient());
         }while (!isValidUserData(currentUser, currentBank));
     }
 
@@ -181,11 +181,6 @@ public final class Forms {
         int choice = -1;
         Scanner scanner = new Scanner(System.in);
 
-        if (client.getAccounts().isEmpty()){
-            System.out.println("Счетов не найдено");
-            return null;
-        }
-
         FinanceAccount financeAccount = null;
 
         do {
@@ -214,4 +209,71 @@ public final class Forms {
         return financeAccount;
     }
 
+    public Transaction transactionForm(Bank currentBank, Client client) {
+        FinanceAccount financeAccountFROM = financeAccountChooseForm(client);
+
+        if (financeAccountFROM == null){
+
+        }
+
+        int accountID = -1;
+        Scanner scanner = new Scanner(System.in);
+
+        FinanceAccount financeAccountTO = null;
+
+        do {
+            System.out.println("Введите номер счета для перевода(ID), для отмены введите 0");
+            try {
+                System.out.print("Ввод:");
+                accountID = scanner.nextInt();
+            }catch (Exception e) {
+                System.out.println("Невернный ввод --> [" + scanner.nextLine() + "]");
+                continue;
+            }
+
+            if (accountID == 0)
+                return null;
+
+
+            if(financeAccountFROM.getAccountID() == accountID ){
+                System.out.println("Нельзя переводить на счет с которого осуществляется перевод");
+                continue;
+            }
+
+            for (FinanceAccount a : currentBank.getAccounts()) {
+                if (accountID == a.getAccountID()) {
+                    financeAccountTO = a;
+                }
+            }
+
+            if (financeAccountTO == null){
+                System.out.println("Счет с номером (ID)" + accountID + " НЕ существует");
+            }
+
+        }while (financeAccountTO == null);
+
+        int amount = 0;
+        boolean success = false;
+        do {
+            System.out.println("Введите сумму перевода(Доступно " + financeAccountFROM.getBalance() + "), для отмены введите 0");
+            try {
+                System.out.print("Ввод:");
+                amount = scanner.nextInt();
+            }catch (Exception e) {
+                System.out.println("Невернный ввод --> [" + scanner.nextLine() + "]");
+                continue;
+            }
+
+            if (amount == 0)
+                return null;
+
+            if (amount <= 0) {
+                System.out.println("\nНеверная сумма перевода --> [" + amount + "]\n");
+            }else
+                success = true;
+
+        }while (!success);
+
+        return new Transaction(financeAccountFROM, financeAccountTO, amount);
+    }
 }

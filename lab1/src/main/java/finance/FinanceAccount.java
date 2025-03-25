@@ -11,24 +11,27 @@ public class FinanceAccount {
     private int accountID;
     private int clientID;
     private long balance;
-    private boolean isActive = true;
-
-    public void topUpBalance(long sumOfMoney) {
-        if (isActive) {
-            balance += sumOfMoney;
-        }else
-            System.out.println("ОШИБКА, счет " + accountID + " заморожен");
-    }
+    private boolean isFrozen = false;
+    private boolean isLocked = false;
 
     @Override
     public String toString() {
-        return "accountID: " + accountID + "\n clientID: " + clientID + "\n balance: " + balance + "\n";
+        return " accountID: " + accountID + "\n clientID: " + clientID + "\n balance: " + balance + "\n isFrozen: " + isFrozen + "\n isLocked: " + isLocked + "\n";
     }
 
-    public FinanceAccount(int accountID, int clientID, long balance, boolean isActive) {
+    public FinanceAccount(int accountID, int clientID, long balance, boolean isFrozen, boolean isLocked) {
         this.accountID = accountID;
         this.clientID = clientID;
         this.balance = balance;
-        this.isActive = isActive;
+        this.isFrozen = isFrozen;
+        this.isLocked = isLocked;
+    }
+
+    public void increaseBalance(long amount) {
+        this.balance += amount;
+    }
+
+    public void decreaseBalance(long amount) {
+        this.balance -= amount;
     }
 }

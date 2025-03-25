@@ -4,13 +4,12 @@ import bank.Bank;
 import finance.Loan;
 import finance.Transaction;
 
-import java.util.List;
 import java.util.Scanner;
 
 public class Manager extends Operator{
 
-    public Manager() {
-        super();
+    public Manager(int idForNewUser) {
+        super(idForNewUser);
     }
 
     public Manager(String fullName, String passportNumber, int id, String phone, String email, String login, String password) {
@@ -22,7 +21,7 @@ public class Manager extends Operator{
         int i = 1;
         for (User user : bank.getUsers()) {
             if(user instanceof Client) {
-                System.out.println(i++ + "." + user.getFullName());
+                System.out.println(i++ + "." + user.toString() + "\n");
             }
         }
         System.out.println("==========================\n");

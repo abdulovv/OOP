@@ -1,10 +1,8 @@
 package users;
 
-import bank.Bank;
-
 public class Admin extends User {
 
-    public Admin() {
+    public Admin(int idForNewUser) {
         super();
     }
 

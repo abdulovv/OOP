@@ -1,10 +1,8 @@
 package users;
 
-import bank.Bank;
-
 public class EnterpriseSpecialist extends User {
 
-    public EnterpriseSpecialist() {
+    public EnterpriseSpecialist(int idForNewUser) {
         super();
     }
 

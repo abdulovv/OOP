@@ -4,7 +4,7 @@ import interfaces.OperatorManagerInterface;
 
 public class Operator extends User implements OperatorManagerInterface {
 
-    public Operator() {
+    public Operator(int idForNewUser) {
         super();
     }
 
