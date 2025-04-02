@@ -1,8 +1,7 @@
 package program.additionalClasses;
 
 import bank.Bank;
-import finance.FinanceAccount;
-import finance.Transaction;
+import finance.*;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -13,12 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.stream.Stream;
 
 public final class Forms {
-    public Forms(){}
+    private List<Bank> banks = new ArrayList<Bank>();
+    public Forms(List<Bank> banks){
+        this.banks = banks;
+    }
 
-    public Bank bankChooseForm(List<Bank> banks) {
+    public Bank bankChooseForm() {
         int choice = -1;
         Scanner scanner = new Scanner(System.in);
 
@@ -221,7 +222,7 @@ public final class Forms {
 
             int i = 1;
             for (FinanceAccount a : bank.getAccounts()) {
-                System.out.println("№" + i++ + ". ID:" + a.getAccountID() + ", Balance:" + a.getBalance() + ", owner:" + bank.findClientByID(a.getClientID()).getFullName());
+                System.out.println("№" + i++ + ". ID:" + a.getAccountID() + ", Balance:" + a.getBalance() + ", owner:" + a.getClient().getFullName());
             }
 
             try {
@@ -242,8 +243,10 @@ public final class Forms {
         return financeAccount;
     }
 
-    public Transaction createTransactionForm(Bank currentBank, Client client) {
+    public Transaction createTransactionForm(Client client) {
         FinanceAccount financeAccountFROM = financeAccountChooseForm(client);
+
+        Bank bankTo = bankChooseForm();
 
         int accountID = -1;
         Scanner scanner = new Scanner(System.in);
@@ -269,7 +272,7 @@ public final class Forms {
                 continue;
             }
 
-            for (FinanceAccount a : currentBank.getAccounts()) {
+            for (FinanceAccount a : bankTo.getAccounts()) {
                 if (accountID == a.getAccountID()) {
                     financeAccountTO = a;
                 }
@@ -352,13 +355,21 @@ public final class Forms {
         int choice = -1;
         Scanner scanner = new Scanner(System.in);
 
+
         User user = null;
+
+        List<User> list = bank.getUsers().stream().filter(u1 -> u1 instanceof Operator && ((Operator) u1).isCancel()).toList();
+
+        if (list.isEmpty()) {
+            System.out.println("Обновление опций менеджера/оператора не ожидается");
+            return null;
+        }
 
         do {
             System.out.println("Выберите пользователя(№), для отмены введите 0");
 
             int i = 1;
-            List<User> list = bank.getUsers().stream().filter(u1 -> u1 instanceof Operator && ((Operator) u1).isCancel()).toList();
+
             for (User o : list) {
                 System.out.println("№" + i++ + ". " + o.getFullName() + ", " + o.getClass().toString());
             }
@@ -384,5 +395,143 @@ public final class Forms {
 
         }while (user == null);
         return user;
+    }
+
+    public Applications takeLoanForm(Client client) {
+        Applications loan = null;
+        Scanner scanner = new Scanner(System.in);
+
+        String info = "LOAN\nCLIENT:\n" + client.toString() + "\nLOAN REMAINING SUM:";
+        long sum = 0;
+        int duration = 0;
+
+        do {
+            System.out.print("Введите сумму рассрочки(>5000):");
+            try {
+                sum = scanner.nextLong();
+            }catch (Exception e) {
+                System.out.println("Неверный ввод --> [" + scanner.nextLine() + "]");
+                continue;
+            }
+
+            if (sum > 5000) break;
+
+        }while (true);
+
+        int choice = -1;
+        do {
+            System.out.print(
+                    "Длительность рассрочки\n" +
+                    "1. 3 месяца\n" +
+                    "2. 6 месяцев\n" +
+                    "3. 12 месяцев\n" +
+                    "4. 24 месяца\n" +
+                    "Ввод(№):"
+            );
+
+            try {
+                choice = scanner.nextInt();
+            }catch (Exception e) {
+                System.out.println("Неверный ввод --> [" + scanner.nextLine() + "]");
+                continue;
+            }
+
+            if (choice == 1) {
+                duration = 3;
+                sum = (long) (sum * 1.02f);
+                break;
+            }else if (choice == 2) {
+                sum = (long) (sum * 1.05f);
+                duration = 6;
+                break;
+            } else if (choice == 3) {
+                sum = (long) (sum * 1.07f);
+                duration = 12;
+                break;
+            } else if (choice == 4) {
+                sum = (long) (sum * 1.10f);
+                duration = 24;
+                break;
+            }else
+                System.out.println("Неверный номер --> [" + choice + "]\n");
+
+        }while (true);
+
+        info += sum + "\nDURATION:" + duration + " MONTHS";
+
+        loan = new Loan(sum, duration, info);
+
+        System.out.println("Итоговая сумма возврата:" + sum);
+
+        return loan;
+    }
+
+    public Applications takeInstallmentForm(Client client) {
+        Applications installment = null;
+        Scanner scanner = new Scanner(System.in);
+
+        String info = "INSTALLMENT\nCLIENT:\n" + client.toString() + "\nINSTALLMENT SUM:";
+        long sum = 0;
+        int duration = 0;
+
+        do {
+            System.out.print("Введите сумму кредита(>5000):");
+            try {
+                sum = scanner.nextLong();
+            } catch (Exception e) {
+                System.out.println("Неверный ввод --> [" + scanner.nextLine() + "]");
+                continue;
+            }
+
+            if (sum > 5000) break;
+
+        } while (true);
+
+        int choice = -1;
+        do {
+            System.out.print(
+                    "Длительность рассрочки\n" +
+                            "1. 3 месяца\n" +
+                            "2. 6 месяцев\n" +
+                            "3. 12 месяцев\n" +
+                            "4. 24 месяца\n" +
+                            "Ввод(№):"
+            );
+
+            try {
+                choice = scanner.nextInt();
+            } catch (Exception e) {
+                System.out.println("Неверный ввод --> [" + scanner.nextLine() + "]");
+                continue;
+            }
+
+            if (choice == 1) {
+                duration = 3;
+                sum = (long) (sum * 1.05f);
+                break;
+            } else if (choice == 2) {
+                sum = (long) (sum * 1.10f);
+                duration = 6;
+                break;
+            } else if (choice == 3) {
+                sum = (long) (sum * 1.15f);
+                duration = 12;
+                break;
+            } else if (choice == 4) {
+                sum = (long) (sum * 1.20f);
+                duration = 24;
+                break;
+            } else
+                System.out.println("Неверный номер --> [" + choice + "]\n");
+
+        } while (true);
+
+        info += sum + "\nDURATION:" + duration + " MONTHS";
+
+        installment = new Installment(sum, duration, info);
+
+        System.out.println("Итоговая сумма возврата:" + sum);
+
+        return installment;
     }
 }

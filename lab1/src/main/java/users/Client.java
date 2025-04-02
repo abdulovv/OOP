@@ -1,6 +1,7 @@
 package users;
 
 import bank.Bank;
+import finance.Applications;
 import finance.FinanceAccount;
 import finance.Transaction;
 import lombok.Getter;
@@ -14,6 +15,7 @@ import java.util.Scanner;
 @Getter
 @Setter
 public class Client extends User {
+    private final List<Applications> applications = new ArrayList<>();
     private final List<FinanceAccount> accounts = new ArrayList<>();
     private FinanceAccount mainAccount;
 
@@ -21,7 +23,7 @@ public class Client extends User {
     public Client(Bank currentBank) {
         super();
         this.id = currentBank.getIdForNewClient();
-        mainAccount = new FinanceAccount(10000+id,id,10000,false, false);
+        mainAccount = new FinanceAccount(Bank.generateIDForAccount(), this,10000,false, false);
         accounts.add(mainAccount);
         currentBank.getAccounts().add(mainAccount);
     }
@@ -32,7 +34,7 @@ public class Client extends User {
 
     public Client(String fullName, String passportNumber, int id, String phone, String email, String login, String password, Bank bank) {
         super(fullName, passportNumber, id, phone, email, login, password);
-        mainAccount = new FinanceAccount(10000+id,id,10000,false, false);
+        mainAccount = new FinanceAccount(Bank.generateIDForAccount(), this,10000,false, false);
         accounts.add(mainAccount);
         bank.getAccounts().add(mainAccount);
     }
@@ -132,5 +134,19 @@ public class Client extends User {
 
         currentFinanceAccount.increaseBalance(amount);
         System.out.println("---------------\nСчет пополнен (" + amount + ")\n---------------");
+    }
+
+    public void takeLoan(Applications loan, Bank bank) {
+        bank.addLoan(loan);
+    }
+
+    public void takeInstallment(Applications installment, Bank bank) {
+        bank.addInstallment(installment);
+    }
+
+    public void printLoans() {
+    }
+
+    public void printInstallment() {
     }
 }

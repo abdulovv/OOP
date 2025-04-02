@@ -15,11 +15,12 @@ import java.util.*;
 @Getter
 @Setter
 public class Bank {
-    private final String LOG_FILEPATH = "logs.txt";
     private final String name;
     private final String BIC;
     private int idForNewClient;
     private int idForNewTransaction;
+
+    private final static List<Integer> occupiedID = new ArrayList<Integer>();
 
     private final List<User> users = new ArrayList<User>();
     private final List<FinanceAccount> accounts = new ArrayList<FinanceAccount>();
@@ -57,19 +58,8 @@ public class Bank {
     }
 
     public FinanceAccount openAccount(Client client) {
-        Random random = new Random();
-        int accountID = 0;
-        FinanceAccount accountWithOccupiedID;
-        do{
-            accountID = random.nextInt(11111,99999);
-            int finalAccountID = accountID;
-            accountWithOccupiedID = accounts.stream().filter(a -> a.getAccountID() == finalAccountID).findFirst().orElse(null);
-        }while (accountWithOccupiedID != null);
 
-        int balance = 0;
-        int clientID = client.getId();
-
-        FinanceAccount newFinanceAccount = FinanceAccount.builder().accountID(accountID).balance(balance).clientID(clientID).build();
+        FinanceAccount newFinanceAccount = FinanceAccount.builder().accountID(generateIDForAccount()).balance(0).client(client).build();
 
         accounts.add(newFinanceAccount);
         System.out.println("-----------------------\nНовый счет был открыт(ID:"+ newFinanceAccount.getAccountID() +")\n-----------------------");
@@ -90,8 +80,8 @@ public class Bank {
         }else if (transaction.getAccountTo().isLocked()){
             System.out.println("Счет на который осуществляется перевод заблокирован (ID "+ transaction.getAccountFrom().getAccountID() + ")");
         }else {
-            String name1 = (users.stream().filter(u -> u.getId() == transaction.getAccountFrom().getClientID()).findFirst().get().getFullName());
-            String name2 = (users.stream().filter(u -> u.getId() == transaction.getAccountTo().getClientID()).findFirst().get().getFullName());
+            String name1 = transaction.getAccountFrom().getClient().getFullName();
+            String name2 = transaction.getAccountTo().getClient().getFullName();
             String date = Instant.now().toString();
             int id = getIdForNewTransaction();
 
@@ -122,7 +112,7 @@ public class Bank {
     }
 
     public void closeAccount(FinanceAccount financeAccount) {
-        FinanceAccount mainFinanceAccount = findClientByID(financeAccount.getClientID()).getMainAccount();
+        FinanceAccount mainFinanceAccount = findClientByID(financeAccount.getClient().getId()).getMainAccount();
         mainFinanceAccount.increaseBalance(financeAccount.getBalance());
 
         accounts.remove(financeAccount);
@@ -131,4 +121,22 @@ public class Bank {
         System.out.println("======================================");
     }
 
+    public void addLoan(Applications loan) {
+        applications.add(loan);
+    }
+
+    public void addInstallment(Applications installment) {
+        applications.add(installment);
+    }
+
+    public static int generateIDForAccount(){
+        Random random = new Random();
+        int accountID = 0;
+        do{
+            accountID = random.nextInt(11111,99999);
+        }while (occupiedID.contains(accountID));
+
+        occupiedID.add(accountID);
+        return accountID;
+    }
 }

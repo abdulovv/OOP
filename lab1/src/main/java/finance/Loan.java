@@ -1,9 +1,13 @@
 package finance;
 
-public class Loan extends Applications {
+import lombok.Getter;
+import lombok.Setter;
 
-    public Loan(String info) {
-        super(info);
+@Setter
+@Getter
+public class Loan extends Applications {
+    public Loan(long sum, int duration, String info) {
+        super(sum, duration, info);
     }
 
 }

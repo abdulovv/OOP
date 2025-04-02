@@ -18,14 +18,7 @@ public class Manager extends Operator{
     }
 
     public void PrintAllClients(Bank bank) {
-        System.out.println("==========================\nСписок клиентов:");
-        int i = 1;
-        for (User user : bank.getUsers()) {
-            if(user instanceof Client) {
-                System.out.println(i++ + "." + user.toString() + "\n");
-            }
-        }
-        System.out.println("==========================\n");
+        super.PrintAllClients(bank);
     }
 
     public void approveLoan(Loan loan) {
@@ -58,58 +51,7 @@ public class Manager extends Operator{
     }
 
     public void checkWaitingRegistrationClients(Bank bank) {
-        if(bank.getWaitingRegClients().isEmpty()) {
-            System.out.println("====================================\nЗаявок на одобрение регистрации нету\n====================================\n");
-            return;
-        }
-
-        User client = null;
-
-        Scanner scanner = new Scanner(System.in);
-        int choice = -1;
-
-        do {
-            System.out.println("Выберите клиента для рассмотрения(№)");
-
-            int i = 1;
-            for (User c : bank.getWaitingRegClients()) {
-                System.out.println("№" + i++ + ". " + c.getFullName());
-            }
-
-            try {
-                System.out.print("Ввод:");
-                choice = scanner.nextInt();
-            }catch (Exception e) {
-                System.out.println("Невернный ввод --> [" + scanner.nextLine() + "]");
-                continue;
-            }
-
-            try {
-                client = bank.getWaitingRegClients().get(--choice);
-            }catch (Exception e) {
-                System.out.println("\nНеверный номер --> [" + ++choice + "]\n");
-            }
-
-        }while (client == null);
-
-        System.out.println("\n\n Данные о клиенте:\n" + client.toString());
-
-        scanner.nextLine();
-        String input;
-
-        do {
-            System.out.println("Одобрить - y / отклонить - n");
-            System.out.print("Ввод:");
-            input = scanner.nextLine();
-
-            if (input.equals("y")) {
-                bank.getWaitingRegClients().remove(client);
-                bank.getUsers().add(client);
-            }
-
-        }while (!input.equals("n") && !input.equals("y"));
-
-        bank.getWaitingRegClients().remove(client);
+        super.checkWaitingRegistrationClients(bank);
     }
 
     public void lockClientAccount(FinanceAccount financeAccount) {

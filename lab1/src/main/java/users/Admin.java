@@ -1,6 +1,7 @@
 package users;
 
 import bank.Bank;
+import finance.FinanceAccount;
 import finance.Transaction;
 
 public class Admin extends User {
@@ -29,5 +30,23 @@ public class Admin extends User {
         }else{
             ((Operator) user).setCancel(false);
         }
+    }
+
+    public void increaseClientBalance(FinanceAccount financeAccount, long amount) {
+        financeAccount.increaseBalance(amount);
+    }
+
+    public void annulAccount(FinanceAccount financeAccount) {
+        financeAccount.setBalance(0);
+    }
+
+    public void lockClientAccount(FinanceAccount financeAccount) {
+        financeAccount.setLocked(true);
+        System.out.println("=========================================\nСчет с номером (ID " + financeAccount.getAccountID() + ") заблокирован!\n=========================================");
+    }
+
+    public void unlockClientAccount(FinanceAccount financeAccount) {
+        financeAccount.setLocked(false);
+        System.out.println("=========================================\nСчет с номером (ID " + financeAccount.getAccountID() + ") разблокирован!\n=========================================");
     }
 }

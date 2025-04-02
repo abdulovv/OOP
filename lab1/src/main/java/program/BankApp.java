@@ -1,7 +1,7 @@
 package program;
 
 import bank.Bank;
-import program.additionalClasses.Initializator;
+import program.additionalClasses.Initializer;
 import program.additionalClasses.Forms;
 import program.additionalClasses.UserMenu;
 import users.*;
@@ -15,8 +15,8 @@ public final class BankApp {
         public static User currentUser = null;
 
         public static List<Bank> banks = new ArrayList<Bank>();
-        private static final Forms forms = new Forms();
-        private static final UserMenu menu = new UserMenu();
+        private static final Forms forms = new Forms(banks);
+        private static final UserMenu menu = new UserMenu(forms);
 
         public static void registerUser() {
             currentUser = forms.roleChooseForm(currentBank);
@@ -31,7 +31,7 @@ public final class BankApp {
         }
 
         public static void chooseBank(){
-            currentBank = forms.bankChooseForm(banks);
+            currentBank = forms.bankChooseForm();
         }
 
         public static void authorize(){
@@ -43,12 +43,6 @@ public final class BankApp {
                 System.out.println("Ваша заявка еще не рассмотрена");
             } else
                 System.out.println("\n" + currentUser.getFullName() + ", здравствуйте");
-
-
-        }
-
-        public static void clear(){
-            System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
         }
 
         public static void userMenu() {
@@ -65,7 +59,7 @@ public final class BankApp {
     }//END CONTEXT
 
     public static void start() throws InterruptedException {
-        Initializator.initBanks(Context.banks);
+        Initializer.initBanks(Context.banks);
 
         String resultOfStartMenu;
         do{
@@ -125,13 +119,11 @@ public final class BankApp {
     //2
 
     public static void registerMenu(){
-        Context.clear();
         Context.chooseBank();
         Context.registerUser();
     }
 
     private static boolean authorizationMenu() {
-        Context.clear();
         Context.chooseBank();
         Context.authorize();
 
