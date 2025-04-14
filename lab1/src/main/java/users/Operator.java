@@ -1,6 +1,8 @@
 package users;
 
 import bank.Bank;
+import finance.Applications;
+import finance.FinanceAccount;
 import finance.Transaction;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,9 +36,10 @@ public class Operator extends User{
         System.out.println("==========================\n");
     }
 
-    public void viewStatistics() {
-        System.out.println("Статистика по операциям:");
-        // Логика получения и вывода статистики
+    public void viewClientStatistic(Client client) {
+        for(String s : client.getLogs()){
+            System.out.println("--  " + s + "  --");
+        }
     }
 
     public void cancelTransaction(Bank bank, Transaction transaction) {
@@ -108,4 +111,52 @@ public class Operator extends User{
         bank.getWaitingRegClients().remove(client);
     }
 
+    public void approveLoan(Applications loan, Bank bank) {
+        Scanner sc = new Scanner(System.in);
+        boolean flag = true;
+        do {
+            System.out.print("\nApproving loan\n" + loan.getInfo() + "\nВведите: y - да / n - нет\nВвод:");
+            String approved = sc.nextLine();
+
+            if (approved.equals("y")) {
+                loan.setActive(true);
+                loan.getClient().getApplications().add(loan);
+
+                FinanceAccount account = loan.getClient().getMainAccount();
+                if (account.isLocked() || account.isFrozen()) {
+                    loan.getClient().openFinanceAccount(bank);
+                    account = loan.getClient().getAccounts().getLast();
+                }
+
+                account.increaseBalance(loan.getSum());
+                account.getClient().getLogs().add("+ " + loan.getSum() + " (одобрение кредита) ID" + account.getAccountID() + ". --");
+                System.out.println("------------------------------\nКредит был одобрен\n------------------------------");
+                flag = false;
+            }else if (approved.equals("n")) {
+                bank.getApplications().remove(loan);
+                System.out.println("------------------------------\nКредит не был одобрен\n------------------------------");
+                flag = false;
+            }
+        }while (flag);
+    }
+
+    public void approveInstallment(Applications installment, Bank bank) {
+        Scanner sc = new Scanner(System.in);
+        boolean flag = true;
+        do {
+            System.out.print("====================================\nApproving installment\n" + installment.getInfo() + "\nВведите: y - да / n - нет\nВвод:");
+            String approved = sc.nextLine();
+
+            if (approved.equals("y")) {
+                installment.setActive(true);
+                installment.getClient().getApplications().add(installment);
+                System.out.println("------------------------------\nРассрочка была одобрена\n------------------------------");
+                flag = false;
+            }else if (approved.equals("n")) {
+                bank.getApplications().remove(installment);
+                System.out.println("------------------------------\nРассрочка не была одобрена\n------------------------------");
+                flag = false;
+            }
+        }while (flag);
+    }
 }

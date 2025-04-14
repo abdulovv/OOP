@@ -1,9 +1,7 @@
 package users;
 
 import bank.Bank;
-import finance.Applications;
-import finance.FinanceAccount;
-import finance.Transaction;
+import finance.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -11,14 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-
 @Getter
 @Setter
 public class Client extends User {
     private final List<Applications> applications = new ArrayList<>();
     private final List<FinanceAccount> accounts = new ArrayList<>();
+    private final List<String> logs = new ArrayList<String>();
     private FinanceAccount mainAccount;
-
 
     public Client(Bank currentBank) {
         super();
@@ -38,7 +35,6 @@ public class Client extends User {
         accounts.add(mainAccount);
         bank.getAccounts().add(mainAccount);
     }
-
 
     public void openFinanceAccount(Bank bank) {
         FinanceAccount newFinanceAccount = bank.openAccount(this);
@@ -62,10 +58,6 @@ public class Client extends User {
             System.out.println(i++ + ". " + financeAccount.toString() );
         }
         System.out.println("===========================================");
-    }
-
-    public void applyForLoan() {
-        //bank.approveLoan(loanId);
     }
 
     public void applyForSalaryProject() {
@@ -96,8 +88,12 @@ public class Client extends User {
         currentBank.performTransaction(transaction);
     }
 
-
     public void withdrawal(FinanceAccount currentFinanceAccount) {
+        if (currentFinanceAccount.isLocked() || currentFinanceAccount.isFrozen()) {
+            System.out.println("Счет " + currentFinanceAccount.getAccountID() + " заморожен или заблокирован");
+            return;
+        }
+
         Scanner sc = new Scanner(System.in);
 
         int amount = -1;
@@ -114,12 +110,18 @@ public class Client extends User {
         if (amount <= currentFinanceAccount.getBalance()) {
             currentFinanceAccount.decreaseBalance(amount);
             System.out.println("---------------\nНаличные сняты (" + amount + ")\n---------------");
+            logs.add("- " + amount + " (снятие наличных) ID" + currentFinanceAccount.getAccountID() + ".");
         }else{
             System.out.println("---------------\nНедостаточно средств.\n---------------");
         }
     }
 
     public void replenish(FinanceAccount currentFinanceAccount) {
+        if (currentFinanceAccount.isLocked() || currentFinanceAccount.isFrozen()) {
+            System.out.print("Счет " + currentFinanceAccount.getAccountID() + "заморожен или заблокирован");
+            return;
+        }
+
         Scanner sc = new Scanner(System.in);
 
         int amount = -1;
@@ -130,23 +132,108 @@ public class Client extends User {
             }catch (Exception e) {
                 System.out.println("Невернный ввод --> [" + sc.nextLine() + "]");
             }
-        }while (amount <= 0 || amount >= 1000000000);
+        }while (amount <= 0 || amount >= 100000000);
 
         currentFinanceAccount.increaseBalance(amount);
         System.out.println("---------------\nСчет пополнен (" + amount + ")\n---------------");
+        logs.add("+ " + amount + " (пополнения счета) ID" + currentFinanceAccount.getAccountID() + ".");
     }
 
     public void takeLoan(Applications loan, Bank bank) {
         bank.addLoan(loan);
+        System.out.println("Ждите одобрения кредита\n----------------------------------");
     }
 
     public void takeInstallment(Applications installment, Bank bank) {
         bank.addInstallment(installment);
+        System.out.println("Ждите одобрения рассрочки\n----------------------------------");
     }
 
+    private boolean checkLoans(){
+        for (Applications a : applications){
+            if (a instanceof Loan && a.isActive()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean checkInstallments(){
+        for (Applications a : applications){
+            if (a instanceof Installment && a.isActive()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     public void printLoans() {
+        if (!checkLoans()){
+            System.out.println("Нету действительных кредитов\n----------------------------------");
+            return;
+        }
+
+        int i = 1;
+        for (Applications a : applications) {
+            if (a instanceof Loan && a.isActive()){
+                System.out.println(i++ + ". " + a.getInfo());
+            }
+        }
+        System.out.println("------------------------------");
     }
 
     public void printInstallment() {
+        if (!checkInstallments()){
+            System.out.println("Нету действительных рассрочек\n----------------------------------");
+            return;
+        }
+
+        int i = 1;
+        for (Applications a : applications) {
+            if (a instanceof Installment && a.isActive()){
+                System.out.println(i++ + ". " + a.getInfo());
+            }
+        }
+        System.out.println("------------------------------");
     }
+
+    public void payForApplication(Applications application, FinanceAccount financeAccount, Bank bank) {
+        if (financeAccount.isLocked() || financeAccount.isFrozen()) {
+            System.out.println("Счет " + financeAccount.getAccountID() + " был заморожен или заблокирован");
+            return;
+        }
+
+        long payment = application.getRemainingSum() / application.getDuration() + 1;
+        String info = "";
+
+        if (payment <= financeAccount.getBalance()) {
+            application.decreaseDuration();
+            application.decreaseRemainingSum(payment);
+            financeAccount.decreaseBalance(payment);
+            logs.add("- " + payment + " (списание наличных на поганшения кредита/рассрочки) ID" + financeAccount.getAccountID() + ".");
+
+            System.out.println("Оплата произведена успешно\n----------------------------------");
+
+            if(application.getRemainingSum() <= 0){
+                System.out.println("\nЗадолжность полностью выплачена!\n----------------------------------");
+                applications.remove(application);
+                bank.getApplications().remove(application);
+            }else{
+                if (application instanceof Loan){
+                    info = "LOAN\nCLIENT:" + this.getFullName() + "\nSUM: " + application.getSum() +"\nCOMMISSION: " + application.getCommission() +
+                            "\nREMAINING SUM: " + application.getRemainingSum() + "\nDURATION: " + application.getDuration() + "MONTH";
+                }else{
+                    info = "INSTALLMENT\nCLIENT:" + this.getFullName() + "\nSUM: " + application.getSum() +"\nCOMMISSION: " + application.getCommission() +
+                            "\nREMAINING SUM: " + application.getRemainingSum() + "\nDURATION: " + application.getDuration() + "MONTH";
+                }
+
+            }
+            application.setInfo(info);
+            return;
+        }
+
+        System.out.println("Недостаточно средств\n----------------------------------");
+    }
+
 }

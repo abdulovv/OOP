@@ -3,7 +3,6 @@ package program.additionalClasses;
 import bank.Bank;
 import finance.Applications;
 import finance.FinanceAccount;
-import finance.Loan;
 import finance.Transaction;
 import users.*;
 
@@ -35,7 +34,8 @@ public final class UserMenu {
                             "11. Перевод средств со счета\n" +
                             "12. Снятие наличных\n" +
                             "13. Пополнение счета\n" +
-                            "14. Накопление средств\n" +
+                            "14. Оплата кредита(месячная)\n" +
+                            "15. Оплата рассрочки(месячная)\n" +
                             "-------------------(ВЫХОД 0)-------------------\n" +
                             "Ввод:"
             );
@@ -103,7 +103,22 @@ public final class UserMenu {
                     client.replenish(currentFinanceAccount);
                     break;
                 case 14:
+                    application = forms.loanChooseForm(client);
+                    if (application != null) {
+                        System.out.println("Сумма для оплаты: " + (application.getRemainingSum() / application.getDuration() + 1));
 
+                        currentFinanceAccount = forms.financeAccountChooseForm(client);
+                        client.payForApplication(application, currentFinanceAccount, currentBank);
+                    }
+                    break;
+                case 15:
+                    application = forms.installmentChooseForm(client);
+                    if (application != null) {
+                        System.out.println("Сумма для оплаты: " + (application.getRemainingSum() / application.getDuration() + 1));
+
+                        currentFinanceAccount = forms.financeAccountChooseForm(client);
+                        client.payForApplication(application, currentFinanceAccount, currentBank);
+                    }
                     break;
                 default:
                     System.out.println("\nНеверный номер --> [" + choice + "]\n");
@@ -135,6 +150,9 @@ public final class UserMenu {
                 continue;
             }
 
+            Applications currentApplication = null;
+            Client currentClient = null;
+
             switch (choice) {
                 case 0:
                     break;
@@ -145,14 +163,21 @@ public final class UserMenu {
                     operator.checkWaitingRegistrationClients(bank);
                     break;
                 case 3:
-
+                    currentApplication = forms.chooseInactiveLoan(bank);
+                    if (currentApplication != null){
+                        operator.approveLoan(currentApplication, bank);
+                    }
                     break;
                 case 4:
-
+                    currentApplication = forms.chooseInactiveLoan(bank);
+                    if (currentApplication != null){
+                        operator.approveInstallment(currentApplication, bank);
+                    }
                     break;
 
                 case 5:
-                    operator.viewStatistics();
+                    currentClient = forms.clientChoose(bank);
+                    operator.viewClientStatistic(currentClient);
                     break;
                 case 6:
                     Transaction transaction = forms.transactionChooseForm(bank);
@@ -172,8 +197,8 @@ public final class UserMenu {
             System.out.print(
                     "1.  Вывести клиентов\n" +
                     "2.  Рассмотреть клиентов ждущих одобрение регистрации\n" +
-                    "3.  Рассмотреть клиентов ждущих одобрение рассрочки\n" +
-                    "4.  Рассмотреть клиентов ждущих одобрение кредитов\n" +
+                    "3.  Рассмотреть клиентов ждущих одобрение кредитов\n" +
+                    "4.  Рассмотреть клиентов ждущих одобрение рассрочки\n" +
                     "5.  Рассмотреть заявки на зарплатный проект\n" +
                     "6.  Проссмотреть статистику по движениям средств клиентов\n" +
                     "7.  Отмена операций специалиста стороннего предприятия\n" +
@@ -192,6 +217,8 @@ public final class UserMenu {
             }
 
             FinanceAccount currentFinanceAccount = null;
+            Applications currentApplication = null;
+            Client currentClient = null;
 
             switch (choice) {
                 case 0:
@@ -203,12 +230,23 @@ public final class UserMenu {
                     manager.checkWaitingRegistrationClients(bank);
                     break;
                 case 3:
+                    currentApplication = forms.chooseInactiveLoan(bank);
+                    if (currentApplication != null){
+                        manager.approveLoan(currentApplication, bank);
+                    }
                     break;
                 case 4:
+                    currentApplication = forms.chooseInactiveInstallment(bank);
+                    if (currentApplication != null){
+                        manager.approveLoan(currentApplication, bank);
+                    }
                     break;
                 case 5:
+                    currentClient = forms.clientChoose(bank);
+                    manager.viewClientStatistic(currentClient);
                     break;
                 case 6:
+
                     break;
                 case 7:
                     break;
@@ -224,7 +262,6 @@ public final class UserMenu {
                     currentFinanceAccount = forms.financeAccountChooseForm(bank);
                     manager.unlockClientAccount(currentFinanceAccount);
                     break;
-
                 default:
                     System.out.println("\nНеверный номер --> [" + choice + "]\n");
 
@@ -277,39 +314,20 @@ public final class UserMenu {
                     break;
                 case 4:
                     financeAccount = forms.financeAccountChooseForm(bank);
-                    long amount = -1;
-
-                    while (true){
-                        Scanner sc = new Scanner(System.in);
-                        System.out.print("Сумма зачисления:");
-
-                        try {
-                            amount = sc.nextLong();
-                        }catch (Exception e){
-                            System.out.println("\nНеверный ввод --> [" + sc.nextLine() + "]\n");
-                        }
-
-                        if (amount > 0) break;
-
-                        System.out.println("Неверная сумма");
-                    }
-
-                    admin.increaseClientBalance(financeAccount, amount);
+                    admin.increaseClientBalance(financeAccount);
                     break;
-                    case 5:
-                        financeAccount = forms.financeAccountChooseForm(bank);
-                        admin.annulAccount(financeAccount);
-                        break;
-                    case 6:
-                        financeAccount = forms.financeAccountChooseForm(bank);
-                        admin.lockClientAccount(financeAccount);
-                        break;
-
-                    case 7:
-                        financeAccount = forms.financeAccountChooseForm(bank);
-                        admin.unlockClientAccount(financeAccount);
-                        break;
-
+                case 5:
+                    financeAccount = forms.financeAccountChooseForm(bank);
+                    admin.annulAccount(financeAccount);
+                    break;
+                case 6:
+                    financeAccount = forms.financeAccountChooseForm(bank);
+                    admin.lockClientAccount(financeAccount);
+                    break;
+                case 7:
+                    financeAccount = forms.financeAccountChooseForm(bank);
+                    admin.unlockClientAccount(financeAccount);
+                    break;
                 default:
                     System.out.println("\nНеверный номер --> [" + choice + "]\n");
             }

@@ -10,9 +10,7 @@ public class EnterpriseSpecialist extends User {
         super(fullName, passportNumber, id, phone, email, login, password);
     }
 
-    public void requestTransfer(String fromAccount, String toAccount, double amount) {
-        //bank.processTransferRequest(fromAccount, toAccount, amount);
-        //System.out.println("Запрос на перевод средств отправлен.");
-    }
+
+
 
 }

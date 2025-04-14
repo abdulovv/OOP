@@ -1,11 +1,9 @@
 package users;
 
 import bank.Bank;
+import finance.Applications;
 import finance.FinanceAccount;
-import finance.Loan;
 import finance.Transaction;
-
-import java.util.Scanner;
 
 public class Manager extends Operator{
 
@@ -21,25 +19,17 @@ public class Manager extends Operator{
         super.PrintAllClients(bank);
     }
 
-    public void approveLoan(Loan loan) {
-        //loan.approve();
-        //System.out.println("Кредит одобрен.");
+    public void approveLoan(Applications loan, Bank bank) {
+        super.approveLoan(loan, bank);
     }
 
-    public void rejectLoan(Loan loan) {
-        //loan.reject();
-        //System.out.println("Кредит отклонён.");
+    public void approveInstallment(Applications installment, Bank bank) {
+       super.approveInstallment(installment, bank);
     }
 
-    public void cancelOperation(Transaction transaction) {
-        //transaction.cancel();
-        //System.out.println("Операция отменена.");
+    public void viewClientStatistic(Client currentClient) {
+        super.viewClientStatistic(currentClient);
     }
-
-    public void viewStatistics() {
-        super.viewStatistics();
-    }
-
 
     public void cancelTransaction(Bank bank, Transaction transaction) {
         super.cancelTransaction(bank, transaction);

@@ -25,7 +25,6 @@ public final class BankApp {
             if(currentUser instanceof Client){
                 currentBank.addRegisterApplication(currentUser);
                 System.out.println(currentUser.getFullName() + ", заявка отправлена, ждите ее рассмотрения!\n");
-
             }else
                 currentBank.getUsers().add(currentUser);
         }
@@ -56,7 +55,7 @@ public final class BankApp {
                 menu.admin(currentBank, (Admin)currentUser);
             }
         }
-    }//END CONTEXT
+    }
 
     public static void start() throws InterruptedException {
         Initializer.initBanks(Context.banks);

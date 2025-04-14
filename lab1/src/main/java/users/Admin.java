@@ -4,6 +4,8 @@ import bank.Bank;
 import finance.FinanceAccount;
 import finance.Transaction;
 
+import java.util.Scanner;
+
 public class Admin extends User {
 
     public Admin(int idForNewUser) {
@@ -14,8 +16,8 @@ public class Admin extends User {
         super(fullName, passportNumber, id, phone, email, login, password);
     }
 
-    public void viewLogs(String logFilePath) {
-        //вывод логов, содержащихся в банке
+    public void viewLogs(Bank bank) {
+        bank.printLogs();
     }
 
     public void cancelAction(Bank bank, Transaction transaction) {
@@ -32,12 +34,31 @@ public class Admin extends User {
         }
     }
 
-    public void increaseClientBalance(FinanceAccount financeAccount, long amount) {
+    public void increaseClientBalance(FinanceAccount financeAccount) {
+        long amount = -1;
+
+        while (true){
+            Scanner sc = new Scanner(System.in);
+            System.out.print("Сумма зачисления:");
+
+            try {
+                amount = sc.nextLong();
+            }catch (Exception e){
+                System.out.println("\nНеверный ввод --> [" + sc.nextLine() + "]\n");
+            }
+
+            if (amount > 0) break;
+
+            System.out.println("Неверная сумма");
+        }
+
         financeAccount.increaseBalance(amount);
+        financeAccount.getClient().getLogs().add("+ " + amount + "(добавление наличных) ID" + financeAccount.getAccountID() + ".");
     }
 
     public void annulAccount(FinanceAccount financeAccount) {
         financeAccount.setBalance(0);
+        financeAccount.getClient().getLogs().add("0 (аннулирование счета) ID" + financeAccount.getAccountID() + ".");
     }
 
     public void lockClientAccount(FinanceAccount financeAccount) {

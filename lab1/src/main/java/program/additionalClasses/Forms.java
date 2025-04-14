@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public final class Forms {
     private List<Bank> banks = new ArrayList<Bank>();
@@ -401,12 +402,14 @@ public final class Forms {
         Applications loan = null;
         Scanner scanner = new Scanner(System.in);
 
-        String info = "LOAN\nCLIENT:\n" + client.toString() + "\nLOAN REMAINING SUM:";
+        String info = "LOAN\nCLIENT:" + client.getFullName() + "\nSUM:";
         long sum = 0;
+        long remainingSum = 0;
+        long commission = 0;
         int duration = 0;
 
         do {
-            System.out.print("Введите сумму рассрочки(>5000):");
+            System.out.print("Введите сумму кредита(>5000):");
             try {
                 sum = scanner.nextLong();
             }catch (Exception e) {
@@ -421,7 +424,7 @@ public final class Forms {
         int choice = -1;
         do {
             System.out.print(
-                    "Длительность рассрочки\n" +
+                    "Длительность кредита\n" +
                     "1. 3 месяца\n" +
                     "2. 6 месяцев\n" +
                     "3. 12 месяцев\n" +
@@ -438,18 +441,18 @@ public final class Forms {
 
             if (choice == 1) {
                 duration = 3;
-                sum = (long) (sum * 1.02f);
+                remainingSum = (long) (sum * 1.08f);
                 break;
             }else if (choice == 2) {
-                sum = (long) (sum * 1.05f);
+                remainingSum = (long) (sum * 1.16f);
                 duration = 6;
                 break;
             } else if (choice == 3) {
-                sum = (long) (sum * 1.07f);
+                remainingSum = (long) (sum * 1.21f);
                 duration = 12;
                 break;
             } else if (choice == 4) {
-                sum = (long) (sum * 1.10f);
+                remainingSum = (long) (sum * 1.34f);
                 duration = 24;
                 break;
             }else
@@ -457,11 +460,19 @@ public final class Forms {
 
         }while (true);
 
-        info += sum + "\nDURATION:" + duration + " MONTHS";
+        commission = remainingSum - sum;
+
+        info += sum + "\nREMAINING SUM: " + remainingSum + "\nCOMMISSION: " + commission;
+        info += "\nDURATION:" + duration + " MONTHS";
 
         loan = new Loan(sum, duration, info);
 
-        System.out.println("Итоговая сумма возврата:" + sum);
+        loan.setSum(sum);
+        loan.setRemainingSum(remainingSum);
+        loan.setCommission(commission);
+        loan.setClient(client);
+
+        System.out.println("Итоговая сумма возврата:" + remainingSum);
 
         return loan;
     }
@@ -470,12 +481,14 @@ public final class Forms {
         Applications installment = null;
         Scanner scanner = new Scanner(System.in);
 
-        String info = "INSTALLMENT\nCLIENT:\n" + client.toString() + "\nINSTALLMENT SUM:";
+        String info = "INSTALLMENT\nCLIENT:" + client.getFullName() + "\nINSTALLMENT SUM:";
         long sum = 0;
+        long remainingSum = 0;
+        long commission = 0;
         int duration = 0;
 
         do {
-            System.out.print("Введите сумму кредита(>5000):");
+            System.out.print("Введите сумму рассрочки(>5000):");
             try {
                 sum = scanner.nextLong();
             } catch (Exception e) {
@@ -507,18 +520,18 @@ public final class Forms {
 
             if (choice == 1) {
                 duration = 3;
-                sum = (long) (sum * 1.05f);
+                remainingSum = (long) (sum * 1.05f);
                 break;
             } else if (choice == 2) {
-                sum = (long) (sum * 1.10f);
+                remainingSum = (long) (sum * 1.10f);
                 duration = 6;
                 break;
             } else if (choice == 3) {
-                sum = (long) (sum * 1.15f);
+                remainingSum = (long) (sum * 1.15f);
                 duration = 12;
                 break;
             } else if (choice == 4) {
-                sum = (long) (sum * 1.20f);
+                remainingSum = (long) (sum * 1.20f);
                 duration = 24;
                 break;
             } else
@@ -526,12 +539,204 @@ public final class Forms {
 
         } while (true);
 
-        info += sum + "\nDURATION:" + duration + " MONTHS";
+        commission = remainingSum - sum;
+
+        info += sum + "\nREMAINING SUM: " + remainingSum + "\nCOMMISSION: " + commission;
+        info += "\nDURATION:" + duration + " MONTHS";
 
         installment = new Installment(sum, duration, info);
 
-        System.out.println("Итоговая сумма возврата:" + sum);
+        installment.setSum(sum);
+        installment.setRemainingSum(remainingSum);
+        installment.setCommission(commission);
+        installment.setClient(client);
+
+        System.out.println("Итоговая сумма возврата:" + remainingSum);
 
         return installment;
+    }
+
+    public Applications chooseInactiveLoan(Bank bank) {
+        int choice = -1;
+        Scanner scanner = new Scanner(System.in);
+
+        Applications loan = null;
+        List<Applications> loans = bank.getApplications().stream().filter(app -> !app.isActive() && app instanceof Loan).toList();
+
+        if (loans.isEmpty()) {
+            System.out.println("Заявок на одобрение кредитов нету");
+            return loan;
+        }
+
+        do{
+            System.out.println("Выберите кредит(№):");
+            int i = 1;
+            for (Applications a : loans) {
+                if (!a.isActive() && a instanceof Loan){
+                    System.out.println((i++) + "№. " + a.getInfo());
+                }
+            }
+            System.out.print("==============================\nВвод:");
+            try {
+                choice = scanner.nextInt();
+            }catch (Exception e) {
+                System.out.println("\nНекорректный ввод --> [" + scanner.nextLine() + "]\n");
+                continue;
+            }
+
+            try {
+                loan = loans.get(choice-1);
+            }catch (Exception e) {
+                System.out.println("\nНеверный номер --> [" + choice + "]\n");
+            }
+        }while (loan == null);
+
+
+
+
+        return loan;
+    }
+
+    public Applications chooseInactiveInstallment(Bank bank) {
+        int choice = -1;
+        Scanner scanner = new Scanner(System.in);
+
+        Applications installment = null;
+        List<Applications> installments = bank.getApplications().stream().filter(app -> !app.isActive() && app instanceof Installment).toList();
+
+        if (installments.isEmpty()) {
+            System.out.println("Заявок на одобрение рассрочек нету");
+            return installment;
+        }
+
+        do{
+            System.out.println("Выберите рассрочку(№):");
+            int i = 1;
+            for (Applications a : installments) {
+                if (!a.isActive() && a instanceof Installment){
+                    System.out.println((i++) + "№. " + a.getInfo());
+                }
+            }
+            System.out.print("==============================\nВвод:");
+            try {
+                choice = scanner.nextInt();
+            }catch (Exception e) {
+                System.out.println("\nНекорректный ввод --> [" + scanner.nextLine() + "]\n");
+                continue;
+            }
+
+            try {
+                installment = installments.get(choice-1);
+            }catch (Exception e) {
+                System.out.println("\nНеверный номер --> [" + choice + "]\n");
+            }
+        }while (installment == null);
+
+        return installment;
+    }
+
+    public Applications loanChooseForm(Client client) {
+        List<Applications> loans = client.getApplications().stream().filter(app -> app.isActive() && app instanceof Loan).toList();
+
+        if (loans.isEmpty()) {
+            System.out.println("У вас нет активных кредитов\n----------------------------------");
+            return null;
+        }
+
+        int choice = -1;
+        Scanner scanner = new Scanner(System.in);
+
+        Applications loan = null;
+
+        do{
+            System.out.println("Выберите кредит(№):");
+            int i = 1;
+            for (Applications a : loans) {
+                System.out.println((i++) + "№." + a.getInfo());
+            }
+            System.out.print("==============================\nВвод:");
+            try {
+                choice = scanner.nextInt();
+            }catch (Exception e) {
+                System.out.println("\nНекорректный ввод --> [" + scanner.nextLine() + "]\n");
+                continue;
+            }
+
+            try {
+                loan = loans.get(choice-1);
+            }catch (Exception e) {
+                System.out.println("\nНеверный номер --> [" + choice + "]\n");
+            }
+        }while (loan == null);
+
+        return loan;
+    }
+
+    public Applications installmentChooseForm(Client client) {
+        List<Applications> installments = client.getApplications().stream().filter(app -> app.isActive() && app instanceof Installment).toList();
+        if (installments.isEmpty()) {
+            System.out.println("У вас нет активных рассрочек\n----------------------------------");
+            return null;
+        }
+
+        int choice = -1;
+        Scanner scanner = new Scanner(System.in);
+
+        Applications installment = null;
+        do{
+            System.out.println("Выберите рассрочку(№):");
+            int i = 1;
+            for (Applications a : installments) {
+                System.out.println((i++) + "№." + a.getInfo());
+            }
+            System.out.print("==============================\nВвод:");
+            try {
+                choice = scanner.nextInt();
+            }catch (Exception e) {
+                System.out.println("\nНекорректный ввод --> [" + scanner.nextLine() + "]\n");
+                continue;
+            }
+
+            try {
+                installment = installments.get(choice-1);
+            }catch (Exception e) {
+                System.out.println("\nНеверный номер --> [" + choice + "]\n");
+            }
+        }while (installment == null);
+
+        return installment;
+    }
+
+
+    public Client clientChoose(Bank bank) {
+        Client client = null;
+
+        List<User> clients = bank.getUsers().stream().filter(user -> user instanceof Client).toList();
+
+        int choice = -1;
+        Scanner scanner = new Scanner(System.in);
+
+        do{
+            System.out.println("Выберите клиента(№):");
+            int i = 1;
+            for (User cl : clients) {
+                System.out.println((i++) + "№." + cl.getFullName() + ", " + cl.getEmail());
+            }
+            System.out.print("==============================\nВвод:");
+            try {
+                choice = scanner.nextInt();
+            }catch (Exception e) {
+                System.out.println("\nНекорректный ввод --> [" + scanner.nextLine() + "]\n");
+                continue;
+            }
+
+            try {
+                client = (Client)clients.get(choice-1);
+            }catch (Exception e) {
+                System.out.println("\nНеверный номер --> [" + choice + "]\n");
+            }
+        }while (client == null);
+
+        return client;
     }
 }

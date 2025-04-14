@@ -2,7 +2,6 @@ package bank;
 
 import finance.Applications;
 import finance.FinanceAccount;
-import finance.Loan;
 import finance.Transaction;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +18,7 @@ public class Bank {
     private final String BIC;
     private int idForNewClient;
     private int idForNewTransaction;
+    private String path;
 
     private final static List<Integer> occupiedID = new ArrayList<Integer>();
 
@@ -29,9 +29,10 @@ public class Bank {
 
     private final List<User> waitingRegClients = new ArrayList<User>();
 
-    public Bank(String name, String BIC) {
+    public Bank(String name, String BIC, String path) {
         this.name = name;
         this.BIC = BIC;
+        this.path = path;
         idForNewClient = 1;
         idForNewTransaction = 1000;
     }
@@ -93,6 +94,10 @@ public class Bank {
 
             System.out.println("Транзакция выполнена успешно!");
             transactions.add(transaction);
+
+            transaction.getAccountFrom().getClient().getLogs().add("- " + transaction.getAmount() + " (перевод средств) ID" + transaction.getAccountFrom().getAccountID() + ".");
+            transaction.getAccountTo().getClient().getLogs().add("+ " + transaction.getAmount() + " (перевод средств) ID" + transaction.getAccountTo().getAccountID() + ".");
+
         }
         System.out.println("======================================\n");
     }
@@ -104,6 +109,10 @@ public class Bank {
         System.out.println("======================================\n");
         System.out.println("Транзакция (ID " + transaction.getId() + ") была отменена!");
         System.out.println("======================================");
+
+        transaction.getAccountFrom().getClient().getLogs().add("+ " + transaction.getAmount() + " (отмена операции) ID" + transaction.getAccountFrom().getAccountID() + ".");
+        transaction.getAccountTo().getClient().getLogs().add("- " + transaction.getAmount() + " (отмена операции) ID" + transaction.getAccountTo().getAccountID() + ".");
+
         transactions.remove(transaction);
     }
 
@@ -138,5 +147,9 @@ public class Bank {
 
         occupiedID.add(accountID);
         return accountID;
+    }
+
+    public void printLogs() {
+
     }
 }
