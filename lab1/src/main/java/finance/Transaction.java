@@ -5,17 +5,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Transaction {
-    private FinanceAccount accountFrom;
-    private FinanceAccount accountTo;
-    private int amount;
+public abstract class Transaction {
+    protected String info;
 
-    private int id;
-    private String info;
+    public Transaction() {
 
-    public Transaction(FinanceAccount accountFrom, FinanceAccount accountTo, int amount) {
-        this.accountFrom = accountFrom;
-        this.accountTo = accountTo;
-        this.amount = amount;
     }
 }

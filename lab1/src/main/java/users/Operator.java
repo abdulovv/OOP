@@ -1,9 +1,8 @@
 package users;
 
 import bank.Bank;
-import finance.Applications;
-import finance.FinanceAccount;
-import finance.Transaction;
+import finance.*;
+import finance.ClientsTransaction;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -53,6 +53,8 @@ public final class BankApp {
                 menu.operator(currentBank, (Operator)currentUser);
             }else if (currentUser instanceof  Admin) {
                 menu.admin(currentBank, (Admin)currentUser);
+            } else if (currentUser instanceof EnterpriseSpecialist) {
+                menu.enterpriseSpecialist(currentBank, (EnterpriseSpecialist)currentUser);
             }
         }
     }

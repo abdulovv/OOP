@@ -1,6 +1,7 @@
 package users;
 
 import bank.Bank;
+import enterprise.EnterpriseApplication;
 import finance.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -60,8 +61,9 @@ public class Client extends User {
         System.out.println("===========================================");
     }
 
-    public void applyForSalaryProject() {
-        //enterprise.registerSalaryProject(enterpriseId, this.id);
+    public void applyForSalaryProject(EnterpriseApplication application, Bank bank) {
+        bank.getEnterpriseApplications().add(application);
+        System.out.println("--------------------------------------------------\nЗаявка на зарплатный проект была оставлена, ждите одобрения");
     }
 
 
@@ -84,7 +86,7 @@ public class Client extends User {
         financeAccount.setFrozen(false);
     }
 
-    public void createTransaction(Bank currentBank, Transaction transaction) {
+    public void createTransaction(Bank currentBank, ClientsTransaction transaction) {
         currentBank.performTransaction(transaction);
     }
 

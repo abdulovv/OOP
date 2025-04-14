@@ -1,9 +1,10 @@
 package program.additionalClasses;
 
 import bank.Bank;
-import finance.Applications;
-import finance.FinanceAccount;
-import finance.Transaction;
+import enterprise.Enterprise;
+import enterprise.EnterpriseApplication;
+import finance.*;
+import finance.ClientsTransaction;
 import users.*;
 
 import java.util.Scanner;
@@ -69,6 +70,9 @@ public final class UserMenu {
                     client.takeInstallment(application, currentBank);
                     break;
                 case 5:
+                    Enterprise enterprise = forms.enterpriseChoose();
+                    EnterpriseApplication enterpriseApplication = forms.enterpriseApplicationForm(client, enterprise);
+                    client.applyForSalaryProject(enterpriseApplication, currentBank);
                     break;
                 case 6:
                     client.printAllAccounts();
@@ -88,7 +92,7 @@ public final class UserMenu {
                     client.unfreezeFinanceAccount(currentFinanceAccount);
                     break;
                 case 11:
-                    Transaction transaction = forms.createTransactionForm(client);
+                    ClientsTransaction transaction = forms.createTransactionForm(client);
                     if (transaction == null){
                         System.out.println("Транзакция была отменена!");
                     }else
@@ -138,7 +142,7 @@ public final class UserMenu {
                             "3. Рассмотреть клиентов ждущих одобрение рассрочки\n" +
                             "4. Рассмотреть клиентов ждущих одобрение кредитов\n" +
                             "5. Проссмотреть статистику по движениям средств клиентов\n" +
-                            "6. Отмена операции клиента\n" +
+                            "6. Отмена операции\n" +
                             "-------------------(ВЫХОД 0)-------------------\n" +
                             "Ввод:"
             );
@@ -199,12 +203,11 @@ public final class UserMenu {
                     "2.  Рассмотреть клиентов ждущих одобрение регистрации\n" +
                     "3.  Рассмотреть клиентов ждущих одобрение кредитов\n" +
                     "4.  Рассмотреть клиентов ждущих одобрение рассрочки\n" +
-                    "5.  Рассмотреть заявки на зарплатный проект\n" +
-                    "6.  Проссмотреть статистику по движениям средств клиентов\n" +
-                    "7.  Отмена операций специалиста стороннего предприятия\n" +
-                    "8.  Отмена операции клиента\n" +
-                    "9.  Блокировка счета\n" +
-                    "10. Разблокировка счета\n" +
+                    "5.  Проссмотреть статистику по движениям средств клиентов\n" +
+                    "6.  Рассмотреть заявки на зарплатный проект \n" +
+                    "7.  Отмена операции\n" +
+                    "8.  Блокировка счета\n" +
+                    "9. Разблокировка счета\n" +
                     "-------------------(ВЫХОД 0)-------------------\n" +
                     "Ввод:"
             );
@@ -246,19 +249,20 @@ public final class UserMenu {
                     manager.viewClientStatistic(currentClient);
                     break;
                 case 6:
-
+                    EnterpriseApplication enterpriseApplication = forms.chooseEnterpriseApplication(bank);
+                    if (enterpriseApplication != null) {
+                        manager.confirmSalaryProject(enterpriseApplication, bank);
+                    }
                     break;
                 case 7:
-                    break;
-                case 8:
                     Transaction transaction = forms.transactionChooseForm(bank);
                     manager.cancelTransaction(bank, transaction);
                     break;
-                case 9:
+                case 8:
                     currentFinanceAccount = forms.financeAccountChooseForm(bank);
                     manager.lockClientAccount(currentFinanceAccount);
                     break;
-                case 10:
+                case 9:
                     currentFinanceAccount = forms.financeAccountChooseForm(bank);
                     manager.unlockClientAccount(currentFinanceAccount);
                     break;
@@ -275,13 +279,12 @@ public final class UserMenu {
         Scanner scanner = new Scanner(System.in);
         do {
             System.out.print(
-                    "1. Просмотр всех логов\n" +
-                    "2. Отмена действия\n" +
-                    "3. Обновить опцию отмены оператора/менеджера\n" +
-                    "4. Добавление средств на счет\n" +
-                    "5. Аннулировать счет\n" +
-                    "6. Блокировка счета\n" +
-                    "7. Разблокировка счета\n" +
+                    "1. Отмена действия\n" +
+                    "2. Обновить опцию отмены оператора/менеджера\n" +
+                    "3. Добавление средств на счет\n" +
+                    "4. Аннулировать счет\n" +
+                    "5. Блокировка счета\n" +
+                    "6. Разблокировка счета\n" +
                     "-------------------(ВЫХОД 0)-------------------\n" +
                     "Ввод:"
             );
@@ -300,33 +303,73 @@ public final class UserMenu {
                 case 0:
                     break;
                 case 1:
-
-                    break;
-                case 2:
                     Transaction transaction = forms.transactionChooseForm(bank);
                     admin.cancelAction(bank, transaction);
                     break;
-                case 3:
+                case 2:
                     user = forms.neededRefreshUsersForm(bank);
                     if (user != null) {
                         admin.refreshOptions(user);
                     }
                     break;
-                case 4:
+                case 3:
                     financeAccount = forms.financeAccountChooseForm(bank);
                     admin.increaseClientBalance(financeAccount);
                     break;
-                case 5:
+                case 4:
                     financeAccount = forms.financeAccountChooseForm(bank);
                     admin.annulAccount(financeAccount);
                     break;
-                case 6:
+                case 5:
                     financeAccount = forms.financeAccountChooseForm(bank);
                     admin.lockClientAccount(financeAccount);
                     break;
-                case 7:
+                case 6:
                     financeAccount = forms.financeAccountChooseForm(bank);
                     admin.unlockClientAccount(financeAccount);
+                    break;
+                default:
+                    System.out.println("\nНеверный номер --> [" + choice + "]\n");
+            }
+        }while (choice != 0);
+    }
+
+    public void enterpriseSpecialist (Bank bank, EnterpriseSpecialist specialist) {
+        int choice = -1;
+        Scanner scanner = new Scanner(System.in);
+        do {
+            System.out.print(
+                    "1. Отмена сотрудника\n" +
+                            "2. Перевод сотруднику\n" +
+                            "-------------------(ВЫХОД 0)-------------------\n" +
+                            "Ввод:"
+            );
+
+            try {
+                choice = scanner.nextInt();
+            }catch (Exception e) {
+                System.out.println("\nНекорректный ввод --> [" + scanner.nextLine() + "]\n");
+                continue;
+            }
+
+            Enterprise enterprise = null;
+            Client employee = null;
+
+            switch (choice) {
+                case 0:
+                    break;
+                case 1:
+                    enterprise = forms.enterpriseChoose();
+                    employee = forms.employeeChoose(enterprise);
+                    if (employee != null) {
+                        specialist.deleteEmployee(enterprise, employee);
+                    }
+                    break;
+                case 2:
+                    EnterpriseTransaction enterpriseTransactionToClient = forms.createEnterpriseTransactionToClient();
+                    if (enterpriseTransactionToClient != null) {
+                        specialist.transferMoney(enterpriseTransactionToClient, bank);
+                    }
                     break;
                 default:
                     System.out.println("\nНеверный номер --> [" + choice + "]\n");

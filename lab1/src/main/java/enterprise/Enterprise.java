@@ -28,7 +28,7 @@ public class Enterprise {
         this.unp = unp;
         this.bic = bic;
         this.address = address;
-        balance = 100000000;
+        balance = 1000000000;
     }
 
     public void transferMoney(Enterprise enterprise, long amount) {
@@ -48,6 +48,18 @@ public class Enterprise {
 
     public void increaseBalance(long amount) {
         balance += amount;
+    }
+
+    @Override
+    public String toString() {
+        return "Enterprise{" +
+                "projectApplications=" + projectApplications + "\n" +
+                ", type=" + type + "\n" +
+                ", name='" + name + '\'' + "\n" +
+                ", unp='" + unp + '\'' + "\n" +
+                ", bic='" + bic + '\'' + "\n" +
+                ", address='" + address + '\'' + "\n" +
+                '}';
     }
 
     public void decreaseBalance(long amount) {

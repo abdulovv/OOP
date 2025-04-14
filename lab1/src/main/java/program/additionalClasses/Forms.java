@@ -1,6 +1,8 @@
 package program.additionalClasses;
 
 import bank.Bank;
+import enterprise.Enterprise;
+import enterprise.EnterpriseApplication;
 import finance.*;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -244,7 +246,7 @@ public final class Forms {
         return financeAccount;
     }
 
-    public Transaction createTransactionForm(Client client) {
+    public ClientsTransaction createTransactionForm(Client client) {
         FinanceAccount financeAccountFROM = financeAccountChooseForm(client);
 
         Bank bankTo = bankChooseForm();
@@ -307,7 +309,7 @@ public final class Forms {
 
         }while (!success);
 
-        return new Transaction(financeAccountFROM, financeAccountTO, amount);
+        return new ClientsTransaction(financeAccountFROM, financeAccountTO, amount);
     }
 
     public Transaction transactionChooseForm(Bank bank) {
@@ -324,8 +326,10 @@ public final class Forms {
         do {
             System.out.println("Выберите транзакцию(№), для отмены введите 0");
 
+            List<Transaction> transactions = bank.getTransactions();
+
             int i = 1;
-            for (Transaction t : bank.getTransactions()) {
+            for (Transaction t : transactions) {
                 System.out.println("№" + i++ + ". " + t.getInfo());
             }
 
@@ -343,7 +347,7 @@ public final class Forms {
             }
 
             try {
-                transaction = bank.getTransactions().get(--choice);
+                transaction = transactions.get(--choice);
             }catch (Exception e) {
                 System.out.println("\nНеверный номер --> [" + choice + "]\n");
             }
@@ -738,5 +742,175 @@ public final class Forms {
         }while (client == null);
 
         return client;
+    }
+
+    public Enterprise enterpriseChoose() {
+        Enterprise enterprise = null;
+        List<Enterprise> enterprises = Bank.getEnterprises();
+
+        int choice = -1;
+        Scanner scanner = new Scanner(System.in);
+
+        do{
+            System.out.println("Выберите предприятие(№):");
+            int i = 1;
+            for (Enterprise e : enterprises) {
+                System.out.println((i++) + "№." + e.toString() + "\n");
+            }
+            System.out.print("==============================\nВвод:");
+            try {
+                choice = scanner.nextInt();
+            }catch (Exception e) {
+                System.out.println("\nНекорректный ввод --> [" + scanner.nextLine() + "]\n");
+                continue;
+            }
+
+            try {
+                enterprise = enterprises.get(choice-1);
+            }catch (Exception e) {
+                System.out.println("\nНеверный номер --> [" + choice + "]\n");
+            }
+        }while (enterprise == null);
+
+        return enterprise;
+    }
+
+    public EnterpriseApplication enterpriseApplicationForm(Client client, Enterprise enterprise) {
+        EnterpriseApplication enterpriseApplication = new EnterpriseApplication( client, enterprise);
+        enterpriseApplication.setInfo("Client " + client.getFullName() + ", email " + client.getEmail() + "\nEnterprise:\n" + enterprise + "\n");
+        return enterpriseApplication;
+    }
+
+    public EnterpriseApplication chooseEnterpriseApplication(Bank bank) {
+        List<EnterpriseApplication> applications = bank.getEnterpriseApplications();
+        if (applications.isEmpty()) {
+            System.out.println("------------------------\nНету активных заявок");
+            return null;
+        }
+
+        EnterpriseApplication application = null;
+
+        int choice = -1;
+        Scanner scanner = new Scanner(System.in);
+
+        do{
+            System.out.println("Выберите заявку(№):");
+            int i = 1;
+            for (EnterpriseApplication apl : applications) {
+                System.out.println((i++) + "№." + apl.getInfo() + "\n");
+            }
+
+            System.out.print("==============================\nВвод:");
+            try {
+                choice = scanner.nextInt();
+            }catch (Exception e) {
+                System.out.println("\nНекорректный ввод --> [" + scanner.nextLine() + "]\n");
+                continue;
+            }
+
+            try {
+                application = applications.get(choice-1);
+            }catch (Exception e) {
+                System.out.println("\nНеверный номер --> [" + choice + "]\n");
+            }
+        }while (application == null);
+
+        return application;
+    }
+
+    public Client employeeChoose(Enterprise enterprise) {
+        Client employee = null;
+
+        List<Client> employees = enterprise.getEmployees();
+
+        if (employees.isEmpty()){
+            System.out.println("Сотрудников еще нету");
+            return null;
+        }
+
+        int choice = -1;
+        Scanner scanner = new Scanner(System.in);
+
+        do{
+            System.out.println("Выберите работника(№):");
+            int i = 1;
+            for (Client cl : employees) {
+                System.out.println((i++) + "№." + cl.getFullName() + ", " + cl.getEmail());
+            }
+            System.out.print("==============================\nВвод:");
+            try {
+                choice = scanner.nextInt();
+            }catch (Exception e) {
+                System.out.println("\nНекорректный ввод --> [" + scanner.nextLine() + "]\n");
+                continue;
+            }
+
+            try {
+                employee = employees.get(choice-1);
+            }catch (Exception e) {
+                System.out.println("\nНеверный номер --> [" + choice + "]\n");
+            }
+        }while (employee == null);
+
+        return employee;
+    }
+
+    public EnterpriseTransaction createEnterpriseTransactionToClient() {
+        Scanner scanner = new Scanner(System.in);
+        Enterprise enterprise = enterpriseChoose();
+        if (enterprise.getEmployees().isEmpty()) {
+            System.out.println("Нету сотрудников");
+            return null;
+        }
+
+        Client employee = employeeChoose(enterprise);
+
+        List<FinanceAccount> accessibleFinancialAccount =  employee.getAccounts().stream().
+                filter(ac -> ac.isFrozen() == false && ac.isLocked() == false ).toList();
+
+
+        if (accessibleFinancialAccount.isEmpty()) {
+            System.out.println("Нету достпуных счетов");
+            return null;
+        }
+
+        FinanceAccount financeAccount = null;
+        boolean flag = false;
+        do {
+            if (flag){
+                System.out.println("Данный счет заморожен.");
+            }
+
+            financeAccount = financeAccountChooseForm(employee);
+            flag = true;
+        }while (financeAccount.isFrozen() && financeAccount.isLocked());
+
+        int amount = 0;
+        boolean success = false;
+        do {
+            System.out.println("Введите сумму перевода(Доступно " + enterprise.getBalance() + "), для отмены введите 0");
+            try {
+                System.out.print("Ввод:");
+                amount = scanner.nextInt();
+            }catch (Exception e) {
+                System.out.println("Невернный ввод --> [" + scanner.nextLine() + "]");
+                continue;
+            }
+
+            if (amount == 0)
+                return null;
+
+            if (amount <= 0) {
+                System.out.println("\nНеверная сумма перевода --> [" + amount + "]\n");
+            }else
+                success = true;
+
+        }while (!success);
+
+        return new EnterpriseTransaction(financeAccount, enterprise, amount, bankChooseForm().getIdForNewTransaction());
+    }
+
+    public EnterpriseTransaction createEnterpriseTransactionToEnterprise() {
+        return null;
     }
 }

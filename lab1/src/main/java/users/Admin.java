@@ -1,7 +1,9 @@
 package users;
 
 import bank.Bank;
+import finance.ClientsTransaction;
 import finance.FinanceAccount;
+import finance.ClientsTransaction;
 import finance.Transaction;
 
 import java.util.Scanner;
@@ -14,10 +16,6 @@ public class Admin extends User {
 
     public Admin(String fullName, String passportNumber, int id, String phone, String email, String login, String password) {
         super(fullName, passportNumber, id, phone, email, login, password);
-    }
-
-    public void viewLogs(Bank bank) {
-        bank.printLogs();
     }
 
     public void cancelAction(Bank bank, Transaction transaction) {

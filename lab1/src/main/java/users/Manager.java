@@ -1,9 +1,13 @@
 package users;
 
 import bank.Bank;
+import enterprise.EnterpriseApplication;
 import finance.Applications;
+import finance.ClientsTransaction;
 import finance.FinanceAccount;
-import finance.Transaction;
+import finance.ClientsTransaction;
+
+import java.util.Scanner;
 
 public class Manager extends Operator{
 
@@ -31,13 +35,34 @@ public class Manager extends Operator{
         super.viewClientStatistic(currentClient);
     }
 
-    public void cancelTransaction(Bank bank, Transaction transaction) {
+    public void cancelTransaction(Bank bank, ClientsTransaction transaction) {
         super.cancelTransaction(bank, transaction);
     }
 
-    public void confirmSalaryProject() {
-        //salaryProject.confirm();
-        //System.out.println("Зарплатный проект подтверждён.");
+    public void confirmSalaryProject(EnterpriseApplication application, Bank bank) {
+        boolean flag = true;
+        Scanner sc = new Scanner(System.in);
+        System.out.println(application.getInfo());
+
+        do {
+            System.out.print("y / n - одобрить / отклонить\nВвод:");
+            String input = sc.nextLine();
+
+            switch (input) {
+                case "y":
+                    application.getEnterprise().addEmployee(application.getClient());
+                    flag = false;
+                    break;
+                case "n":
+                    System.out.println("-----------------\nЗаявка была отклонена");
+                    flag = false;
+                    break;
+                default:
+                    System.out.println("Неверный ввод -> [" + input + "]");
+            }
+            bank.getEnterpriseApplications().remove(application);
+
+        }while (flag);
     }
 
     public void checkWaitingRegistrationClients(Bank bank) {
