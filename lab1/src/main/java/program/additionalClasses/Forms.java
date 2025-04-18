@@ -906,8 +906,9 @@ public final class Forms {
                 success = true;
 
         }while (!success);
-
-        return new EnterpriseTransaction(financeAccount, enterprise, amount, bankChooseForm().getIdForNewTransaction());
+        EnterpriseTransaction tr = new EnterpriseTransaction(financeAccount, enterprise, amount, bankChooseForm().getIdForNewTransaction());
+        tr.setInfo("Transaction ID:" + tr.getID() + "\n" + tr.getEnterprise().getName() + " --( amount: + " + tr.getAmount() + ")--> " + tr.getClientAccount().getClient().getFullName() + ", ID " + tr.getClientAccount().getAccountID());
+        return tr;
     }
 
     public EnterpriseTransaction createEnterpriseTransactionToEnterprise() {

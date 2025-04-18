@@ -1,9 +1,7 @@
 package users;
 
 import bank.Bank;
-import finance.ClientsTransaction;
 import finance.FinanceAccount;
-import finance.ClientsTransaction;
 import finance.Transaction;
 
 import java.util.Scanner;
