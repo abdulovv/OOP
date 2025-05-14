@@ -18,8 +18,7 @@ public class Cloth {
     @Column(name = "price")
     private Double price;
     @Column(name = "type")
-    //@Convert(converter = TypeConverter.class)
-    @Enumerated(EnumType.STRING)
+    @Convert(converter = TypeConverter.class)
     private Type type;
 
     public Cloth(String name, double price, Type type) {

@@ -1,10 +1,8 @@
 package com.example.kursach.db.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.example.kursach.converters.DateTimeConverter;
+import jakarta.persistence.*;
 import lombok.Data;
-import jakarta.persistence.Id;
 
 import java.time.LocalDateTime;
 
@@ -14,14 +12,24 @@ import java.time.LocalDateTime;
 @Entity
 public class Order {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
+    @Convert(converter = DateTimeConverter.class)
     @Column(name = "order_date")
-    private String orderDate;
+    private LocalDateTime orderDate;
     @Column(name = "contact_info")
     private String contactInfo;
     @Column(name = "full_name")
     private String fullName;
 
+    public Order(String contactInfo, String fullName) {
+        this.orderDate = LocalDateTime.now();
+        this.contactInfo = contactInfo;
+        this.fullName = fullName;
+    }
 
+    public Order() {
+
+    }
 }
