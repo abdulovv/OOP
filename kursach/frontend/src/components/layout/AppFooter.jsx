@@ -6,7 +6,7 @@ const footerStyle = {
     color: '#fff',
     height: 'calc(7vh)',
     lineHeight: '6px',
-    backgroundColor: '#10a80a',
+    backgroundColor: '#196807',
     border: '1.2px solid #000'
 };
 

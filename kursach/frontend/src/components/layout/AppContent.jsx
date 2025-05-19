@@ -11,26 +11,28 @@ const contentStyle = {
 
 // Стили для сетки 3x2
 const gridContainerStyle = {
-    width: '95%',
-    height: '85%',
-    maxWidth: '95%', // Ограничиваем максимальную ширину контейнера
-    maxHeight: '85%',
+    width: '90%',
+    height: '90%',
     margin: '0 auto', // Центрируем контейнер по горизонтали
     display: 'grid',
+    border: '2px dashed #555', // Прорисовка границы всей сетки
     gridTemplateColumns: 'repeat(3, 1fr)', // 3 колонки равной ширины
     gap: '25px', // Расстояние между квадратами
+    justifyContent: 'center', // ← Центрируем всю сетку по горизонтали
+    justifyItems: 'center',   // ← Центрируем КАЖДЫЙ элемент внутри своей ячейки
 };
 
 // Стили для каждого квадратного элемента
 const itemStyle = {
-    marginTop: '24px',
+    marginTop: '7%',
     width: '100%',
-    height: '250px',
+    height: '90%',
     backgroundColor: '#3a3a3a',
-    border: '3px solid white',
+    border: '3px solid #FFFFFF6C',
     position: 'relative', // Для центрирования контента внутри
     borderRadius: '8px',
 };
+
 
 // Стили для текста/изображения внутри квадрата
 const innerItemStyle = {

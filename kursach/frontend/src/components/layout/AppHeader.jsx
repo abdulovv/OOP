@@ -6,7 +6,7 @@ const headerStyle = {
     height: 'calc(7vh)',
     paddingInline: 48,
     lineHeight: 'calc(7vh)',
-    backgroundColor: '#10a80a',
+    backgroundColor: '#196807',
     border: '1.2px solid #000'
 };
 
