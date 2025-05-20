@@ -4,7 +4,7 @@ import { Layout } from 'antd';
 // Стили для контейнера AppContent
 const contentStyle = {
     color: 'white',
-    backgroundColor: '#1a1a1a', // Темный фон из вашего скриншота
+    backgroundColor: 'rgb(35,35,35)', // Темный фон из вашего скриншота
     minHeight: 'calc(86vh)',
 
 };
@@ -15,7 +15,6 @@ const gridContainerStyle = {
     height: '90%',
     margin: '0 auto', // Центрируем контейнер по горизонтали
     display: 'grid',
-    border: '2px dashed #555', // Прорисовка границы всей сетки
     gridTemplateColumns: 'repeat(3, 1fr)', // 3 колонки равной ширины
     gap: '25px', // Расстояние между квадратами
     justifyContent: 'center', // ← Центрируем всю сетку по горизонтали
@@ -27,8 +26,8 @@ const itemStyle = {
     marginTop: '7%',
     width: '100%',
     height: '90%',
-    backgroundColor: '#3a3a3a',
-    border: '3px solid #FFFFFF6C',
+    backgroundColor: '#353535',
+    border: '3px solid #DAD8BBFF',
     position: 'relative', // Для центрирования контента внутри
     borderRadius: '8px',
 };

@@ -1,19 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Layout, Input, Select, Checkbox, Button } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
+import axios from 'axios';
+
 
 export default function AppSider() {
+    const [clothes, setClothes] = useState([]); // Для хранения товаров
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedSex, setSelectedSex] = useState(''); // Для выбора пола
     const [selectedCategory, setSelectedCategory] = useState('');
     const [selectedSizes, setSelectedSizes] = useState([]); // Для множественного выбора размеров
     const [priceFrom, setPriceFrom] = useState(''); // Цена от
     const [priceTo, setPriceTo] = useState(''); // Цена до
-
-    const handleSearch = (value) => {
-        console.log('Поиск:', value);
-        // Здесь можно вызвать функцию поиска, фильтрации, отправить API-запрос и т.д.
-    };
 
     const handleSizeChange = (size, checked) => {
         if (checked) {
@@ -27,12 +25,31 @@ export default function AppSider() {
         setSearchQuery('');
         setSelectedSex('');
         setSelectedSizes([]);
-        setPriceFrom('')
-        setPriceTo('')
-        setSelectedCategory('')
+        setPriceFrom('');
+        setPriceTo('');
+        setSelectedCategory('');
     };
 
-    // Функция для ограничения ввода только цифр и точки
+    const applyFilters = () => {
+        const filters = {
+            searchQuery,
+            selectedSex,
+            selectedCategory,
+            selectedSizes,
+            priceFrom: parseFloat(priceFrom),
+            priceTo: parseFloat(priceTo),
+        };
+
+        axios.post('http://localhost:8080/api/clothes/filter', filters)
+            .then(response => {
+                console.log('Результаты фильтрации:', response.data);
+                setClothes(response.data); // Обновляем список товаров
+            })
+            .catch(error => {
+                console.error('Ошибка при фильтрации:', error);
+            });
+    };
+
     const validateNumberInput = (e) => {
         const input = e.target.value;
         const regex = /^\d*\.?\d*$/; // Разрешаем только цифры и одну точку
@@ -43,15 +60,23 @@ export default function AppSider() {
 
     const validateSearchInput = (e) => {
         let input = e.target.value;
-
-        // Регулярное выражение: разрешаем латиницу, кириллицу, цифры и пробелы
         const regex = /^[A-Za-zА-Яа-я0-9 ]*$/;
-
         if (!regex.test(input)) {
-            // Если есть запрещённые символы — удаляем их
             e.target.value = input.replace(/[^A-Za-zА-Яа-я0-9 ]/g, '');
         }
     };
+
+    useEffect(() => {
+        // Получаем все товары при загрузке компонента
+        axios.get('http://localhost:8080/api/clothes')
+            .then(response => {
+                console.log('Полученные товары:', response.data);
+                setClothes(response.data);
+            })
+            .catch(error => {
+                console.error('Ошибка при получении товаров:', error);
+            });
+    }, []);
 
     return (
         <Layout.Sider
@@ -59,7 +84,7 @@ export default function AppSider() {
                 textAlign: 'center',
                 height: '100vh',
                 color: '#fff',
-                backgroundColor: '#171717',
+                backgroundColor: '#3a3a3a',
                 borderRight: '1.2px solid #000',
                 display: 'flex',
                 flexDirection: 'column',
@@ -76,14 +101,11 @@ export default function AppSider() {
                     placeholder="Поиск..."
                     prefix={<SearchOutlined />}
                     value={searchQuery}
-                    onChange={(e) => {
-                        setSearchQuery(e.target.value);
-                        handleSearch(e.target.value);
-                    }}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                     onInput={validateSearchInput}
                     style={{
                         width: '100%',
-                        backgroundColor: '#196807',
+                        backgroundColor: '#0695f8',
                         border: '2px solid #3e3e3e',
                         padding: '10px 14px',
                         color: '#fff',
@@ -93,7 +115,6 @@ export default function AppSider() {
                         height: '44px',
                     }}
                 />
-
                 {/* Разделительная линия с текстом "Filter" посередине */}
                 <div
                     style={{
@@ -115,12 +136,11 @@ export default function AppSider() {
                             textAlign: 'center',
                         }}
                     >
-            Filter
-          </span>
+                        Filter
+                    </span>
                     <div style={{ flex: 1, height: '1px', backgroundColor: '#444' }} />
                 </div>
             </div>
-
             {/* Блок с фильтром "Пол" */}
             <div
                 style={{
@@ -134,25 +154,25 @@ export default function AppSider() {
                     flexWrap: 'nowrap',
                 }}
             >
-        <span
-            style={{
-                color: '#ccc',
-                fontSize: '14px',
-                fontWeight: 500,
-                whiteSpace: 'nowrap',
-                textAlign: 'left',
-                flexShrink: 0,
-            }}
-        >
-          Пол:
-        </span>
+                <span
+                    style={{
+                        color: '#ccc',
+                        fontSize: '14px',
+                        fontWeight: 500,
+                        whiteSpace: 'nowrap',
+                        textAlign: 'left',
+                        flexShrink: 0,
+                    }}
+                >
+                    Пол:
+                </span>
                 <Select
                     placeholder="Не выбрано"
                     value={selectedSex}
                     onChange={setSelectedSex}
                     style={{
                         flex: 1,
-                        backgroundColor: '#196807',
+                        backgroundColor: '#0695f8',
                         border: '2px solid #3e3e3e',
                         borderRadius: '6px',
                         color: '#fff',
@@ -160,7 +180,7 @@ export default function AppSider() {
                         fontSize: '16px',
                     }}
                     dropdownRender={(menu) => (
-                        <div style={{ backgroundColor: '#196807', color: '#fff' }}>{menu}</div>
+                        <div style={{ backgroundColor: '#0695f8', color: '#fff' }}>{menu}</div>
                     )}
                 >
                     <Select.Option value="">Не выбрано</Select.Option>
@@ -168,7 +188,6 @@ export default function AppSider() {
                     <Select.Option value="female">Женский</Select.Option>
                 </Select>
             </div>
-
             {/* Блок с фильтром "Категория" */}
             <div
                 style={{
@@ -182,25 +201,25 @@ export default function AppSider() {
                     flexWrap: 'nowrap',
                 }}
             >
-        <span
-            style={{
-                color: '#ccc',
-                fontSize: '14px',
-                fontWeight: 500,
-                whiteSpace: 'nowrap',
-                textAlign: 'left',
-                flexShrink: 0,
-            }}
-        >
-          Категория:
-        </span>
+                <span
+                    style={{
+                        color: '#ccc',
+                        fontSize: '14px',
+                        fontWeight: 500,
+                        whiteSpace: 'nowrap',
+                        textAlign: 'left',
+                        flexShrink: 0,
+                    }}
+                >
+                    Категория:
+                </span>
                 <Select
                     placeholder="Выберите категорию"
                     value={selectedCategory}
                     onChange={setSelectedCategory}
                     style={{
                         flex: 1,
-                        backgroundColor: '#196807',
+                        backgroundColor: '#0695f8',
                         border: '2px solid #3e3e3e',
                         borderRadius: '6px',
                         color: '#fff',
@@ -208,7 +227,7 @@ export default function AppSider() {
                         fontSize: '16px',
                     }}
                     dropdownRender={(menu) => (
-                        <div style={{ backgroundColor: '#196807', color: '#fff' }}>{menu}</div>
+                        <div style={{ backgroundColor: '#0695f8', color: '#fff' }}>{menu}</div>
                     )}
                 >
                     <Select.Option value="">Не выбрано</Select.Option>
@@ -218,7 +237,6 @@ export default function AppSider() {
                     <Select.Option value="HeadWear">Головные уборы</Select.Option>
                 </Select>
             </div>
-
             {/* Блок с фильтром "Размер" (чекбоксы) */}
             <div
                 style={{
@@ -227,59 +245,57 @@ export default function AppSider() {
                     marginBottom: '30px',
                 }}
             >
-        <span
-            style={{
-                color: '#ccc',
-                fontSize: '14px',
-                fontWeight: 500,
-                whiteSpace: 'nowrap',
-                textAlign: 'left',
-                display: 'block',
-                marginBottom: '10px',
-            }}
-        >
-          Размер:
-        </span>
-
+                <span
+                    style={{
+                        color: '#ccc',
+                        fontSize: '14px',
+                        fontWeight: 500,
+                        whiteSpace: 'nowrap',
+                        textAlign: 'left',
+                        display: 'block',
+                        marginBottom: '10px',
+                    }}
+                >
+                    Размер:
+                </span>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                     <Checkbox
                         checked={selectedSizes.includes('XS')}
                         onChange={(e) => handleSizeChange('XS', e.target.checked)}
-                        style={{ color: '#3dcf1a' }}
+                        style={{ color: '#ffffff' }}
                     >
                         XS
                     </Checkbox>
                     <Checkbox
                         checked={selectedSizes.includes('S')}
                         onChange={(e) => handleSizeChange('S', e.target.checked)}
-                        style={{ color: '#3dcf1a' }}
+                        style={{ color: '#ffffff' }}
                     >
                         S
                     </Checkbox>
                     <Checkbox
                         checked={selectedSizes.includes('M')}
                         onChange={(e) => handleSizeChange('M', e.target.checked)}
-                        style={{ color: '#3dcf1a' }}
+                        style={{ color: '#ffffff' }}
                     >
                         M
                     </Checkbox>
                     <Checkbox
                         checked={selectedSizes.includes('L')}
                         onChange={(e) => handleSizeChange('L', e.target.checked)}
-                        style={{ color: '#3dcf1a' }}
+                        style={{ color: '#ffffff' }}
                     >
                         L
                     </Checkbox>
                     <Checkbox
                         checked={selectedSizes.includes('XL')}
                         onChange={(e) => handleSizeChange('XL', e.target.checked)}
-                        style={{ color: '#3dcf1a' }}
+                        style={{ color: '#ffffff' }}
                     >
                         XL
                     </Checkbox>
                 </div>
             </div>
-
             {/* Блок с ценой */}
             <div
                 style={{
@@ -296,7 +312,7 @@ export default function AppSider() {
                     placeholder="От"
                     style={{
                         flex: 1,
-                        backgroundColor: '#196807',
+                        backgroundColor: '#0565a6',
                         border: '2px solid #3e3e3e',
                         padding: '10px 14px',
                         color: '#fff',
@@ -307,14 +323,14 @@ export default function AppSider() {
                     }}
                     value={priceFrom}
                     onChange={(e) => setPriceFrom(e.target.value)}
-                    onInput={(e) => validateNumberInput(e, 'from')} // Проверка диапазона
+                    onInput={validateNumberInput}
                 />
                 <span style={{ color: '#ccc', fontSize: '14px', fontWeight: 500 }}>до</span>
                 <Input
                     placeholder="До"
                     style={{
                         flex: 1,
-                        backgroundColor: '#196807',
+                        backgroundColor: '#0565a6',
                         border: '2px solid #3e3e3e',
                         padding: '10px 14px',
                         color: '#fff',
@@ -325,12 +341,10 @@ export default function AppSider() {
                     }}
                     value={priceTo}
                     onChange={(e) => setPriceTo(e.target.value)}
-                    onInput={(e) => validateNumberInput(e, 'to')} // Проверка диапазона
+                    onInput={validateNumberInput}
                 />
             </div>
-
             {/* Полосочка Reset */}
-
             <div
                 style={{
                     display: 'flex',
@@ -351,11 +365,10 @@ export default function AppSider() {
                         textAlign: 'center',
                     }}
                 >
-            Reset
-          </span>
+                    Reset
+                </span>
                 <div style={{ flex: 1, height: '1px', backgroundColor: '#444' }} />
             </div>
-
             {/* Кнопка Сбросить */}
             <Button
                 type="primary"
@@ -363,7 +376,7 @@ export default function AppSider() {
                 style={{
                     width: '100%',
                     maxWidth: '500px',
-                    backgroundColor: '#196807',
+                    backgroundColor: '#0695f8',
                     border: 'none',
                     color: '#fff',
                     borderRadius: '6px',
@@ -373,6 +386,24 @@ export default function AppSider() {
                 }}
             >
                 Сбросить
+            </Button>
+            {/* Кнопка Применить */}
+            <Button
+                type="primary"
+                onClick={applyFilters}
+                style={{
+                    width: '100%',
+                    maxWidth: '500px',
+                    backgroundColor: '#0695f8',
+                    border: 'none',
+                    color: '#fff',
+                    borderRadius: '6px',
+                    fontSize: '16px',
+                    height: '44px',
+                    marginTop: '20px',
+                }}
+            >
+                Применить
             </Button>
         </Layout.Sider>
     );
