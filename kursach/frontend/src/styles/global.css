@@ -1,0 +1,49 @@
+/* src/styles/global.css */
+body {
+    color: #000;
+    background-color: #fff;
+}
+
+.ant-layout-header {
+    background: #000 !important;
+    color: #fff !important;
+}
+
+.ant-menu.ant-menu-dark {
+    background: #000 !important;
+    color: #fff !important;
+}
+
+.ant-menu.ant-menu-dark .ant-menu-item a,
+.ant-menu.ant-menu-dark .ant-menu-submenu-title {
+    color: #fff !important;
+}
+
+.ant-menu.ant-menu-dark .ant-menu-item-selected a,
+.ant-menu.ant-menu-dark .ant-menu-submenu-title-selected {
+    color: #fff !important;
+}
+
+.ant-layout-content {
+    background: #fff !important;
+}
+
+.site-layout-content {
+    background: #fff !important;
+    color: #000 !important;
+}
+
+.ant-btn-primary {
+    background-color: #000 !important;
+    border-color: #000 !important;
+    color: #fff !important;
+}
+
+.ant-btn-primary:hover,
+.ant-btn-primary:focus {
+    background-color: #333 !important;
+    border-color: #333 !important;
+    color: #fff !important;
+}
+
+/* Добавьте другие стили по мере необходимости */

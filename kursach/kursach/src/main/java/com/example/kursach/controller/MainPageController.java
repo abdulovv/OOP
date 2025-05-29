@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/clothes")
+@RequestMapping("/sdfldsk")
 public class MainPageController {
     @Autowired
     private OrderRepository orderRepository;
@@ -32,16 +32,16 @@ public class MainPageController {
 
     // Фильтрация товаров
     @PostMapping("/filter")
-    public List<Cloth> filterClothes(@RequestBody FilterRequest request) {
-        return clothRepository.filterByCriteria(
-                request.getSearchQuery(),
-                request.getSex(),
-                request.getCategory(),
-                request.getSizes(),
-                request.getPriceFrom(),
-                request.getPriceTo()
-        );
-    }
+//    public List<Cloth> filterClothes(@RequestBody FilterRequest request) {
+//        return clothRepository.filterByCriteria(
+//                request.getSearchQuery(),
+//                request.getSex(),
+//                request.getCategory(),
+//                request.getSizes(),
+//                request.getPriceFrom(),
+//                request.getPriceTo()
+//        );
+//    }
 
 
     @GetMapping("/")

@@ -25,18 +25,12 @@ public class SizeConverter implements AttributeConverter<Size, String> {
 
     @Override
     public Size convertToEntityAttribute(String s) {
-        Size dbAttribute;
-        if (s.equals("XS")) {
-            dbAttribute = Size.XSMALL;
-        }else if (s.equals("S")) {
-            dbAttribute = Size.SMALL;
-        }else if (s.equals("M")) {
-            dbAttribute = Size.MEDIUM;
-        }else if (s.equals("L")) {
-            dbAttribute = Size.LARGE;
-        }else {
-            dbAttribute = Size.XLARGE;
-        }
-        return dbAttribute;
+        return switch (s) {
+            case "XS" -> Size.XSMALL;
+            case "S" -> Size.SMALL;
+            case "M" -> Size.MEDIUM;
+            case "L" -> Size.LARGE;
+            default -> Size.XLARGE;
+        };
     }
 }

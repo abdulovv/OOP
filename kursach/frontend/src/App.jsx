@@ -1,28 +1,37 @@
+// src/App.jsx
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Layout } from 'antd';
+import CatalogPage from './pages/CatalogPage';
+import ClothDetailPage from './pages/ClothDetailPage';
+import NotFoundPage from './pages/NotFoundPage';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import CartPage from './pages/CartPage';
+import OrderCompletePage from './pages/OrderCompletePage'; // Импортируйте OrderCompletePage
 
-import AppContent from "./components/layout/AppContent";
-import AppFooter from "./components/layout/AppFooter";
-import AppHeader from "./components/layout/AppHeader";
-import AppSider from "./components/layout/AppSider";
+const { Content } = Layout;
 
-const layoutStyle = {
-  borderRadius: 8,
-  overflow: 'hidden',
-  height: 'calc(100vh)',
-  width: 'calc(100%)',
-  maxWidth: 'calc(100%)',
-};
+function App() {
+    return (
+        <Router>
+            <Layout style={{ minHeight: '100vh' }}>
+                <Header />
+                <Content style={{ padding: '0 50px', paddingTop: 0 }}>
+                    <div className="site-layout-content" style={{ padding: 24, background: '#fff', minHeight: 380 }}>
+                        <Routes>
+                            <Route path="/" element={<CatalogPage />} />
+                            <Route path="/product/:id" element={<ClothDetailPage />} />
+                            <Route path="/cart" element={<CartPage />} />
+                            <Route path="/order-complete" element={<OrderCompletePage />} /> {/* Добавьте маршрут для OrderCompletePage */}
+                            <Route path="*" element={<NotFoundPage />} />
+                        </Routes>
+                    </div>
+                </Content>
+                <Footer />
+            </Layout>
+        </Router>
+    );
+}
 
-const App = () => (
-
-      <Layout style={layoutStyle}>
-        <AppSider />
-        <Layout>
-          <AppHeader />
-          <AppContent />
-          <AppFooter />
-        </Layout>
-      </Layout>
-
-);
 export default App;
