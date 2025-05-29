@@ -1,6 +1,6 @@
 package com.example.kursach.domain;
 
-public enum Type {
+public enum Category {
     HeadWear,
     FootWear,
     LegWear,

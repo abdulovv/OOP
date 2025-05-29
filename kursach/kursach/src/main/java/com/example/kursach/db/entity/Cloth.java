@@ -1,9 +1,13 @@
 package com.example.kursach.db.entity;
 
-import com.example.kursach.converters.TypeConverter;
-import com.example.kursach.domain.Type;
+import com.example.kursach.converters.CategoryConverter;
+import com.example.kursach.converters.SexConverter;
+import com.example.kursach.domain.Sex;
+import com.example.kursach.domain.Category;
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 @Entity
@@ -18,16 +22,23 @@ public class Cloth {
     @Column(name = "price")
     private Double price;
     @Column(name = "type")
-    @Convert(converter = TypeConverter.class)
-    private Type type;
+    @Convert(converter = CategoryConverter.class)
+    private Category category;
+    @Column(name = "sex")
+    @Convert(converter = SexConverter.class)
+    private Sex sex;
 
-    public Cloth(String name, double price, Type type) {
+    public Cloth(String name, double price, Category category, Sex sex) {
         this.name = name;
         this.price = price;
-        this.type = type;
+        this.category = category;
+        this.sex = sex;
     }
 
     public Cloth() {
 
     }
+
+    @OneToMany(mappedBy = "cloth", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ClothSizes> sizes;
 }

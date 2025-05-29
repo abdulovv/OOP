@@ -136,7 +136,7 @@ export default function AppSider() {
                             textAlign: 'center',
                         }}
                     >
-                        Filter
+                        Фильтр
                     </span>
                     <div style={{ flex: 1, height: '1px', backgroundColor: '#444' }} />
                 </div>
@@ -355,18 +355,7 @@ export default function AppSider() {
                 }}
             >
                 <div style={{ flex: 1, height: '1px', backgroundColor: '#444' }} />
-                <span
-                    style={{
-                        color: '#aaa',
-                        fontSize: '14px',
-                        fontWeight: 500,
-                        whiteSpace: 'nowrap',
-                        padding: '0 10px',
-                        textAlign: 'center',
-                    }}
-                >
-                    Reset
-                </span>
+
                 <div style={{ flex: 1, height: '1px', backgroundColor: '#444' }} />
             </div>
             {/* Кнопка Сбросить */}
