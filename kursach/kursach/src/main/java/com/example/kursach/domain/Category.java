@@ -4,6 +4,7 @@ public enum Category {
     Hat,
     Slippers,
     Shorts,
+    Shoes,
     Shirt,
     Socks,
     Jacket,

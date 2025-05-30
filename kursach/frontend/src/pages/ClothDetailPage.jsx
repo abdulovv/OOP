@@ -21,7 +21,7 @@ const categoryMap = {
     "Hat":"Головной убор"
 };
 
-const availableSizesOrder = ['XSMALL', 'SMALL', 'MEDIUM', 'LARGE', 'XLARGE'];
+const availableSizesOrder = ['XS', 'S', 'M', 'L', 'XL'];
 
 function ClothDetailPage() {
     const { id } = useParams();
@@ -122,11 +122,11 @@ function ClothDetailPage() {
                                 .sort((a, b) => availableSizesOrder.indexOf(a.size) - availableSizesOrder.indexOf(b.size))
                                 .map(sizeInfo => {
                                     const shortSize = {
-                                        'XSMALL': 'XS',
-                                        'SMALL': 'S',
-                                        'MEDIUM': 'M',
-                                        'LARGE': 'L',
-                                        'XLARGE': 'XL'
+                                        'XS': 'XS',
+                                        'S': 'S',
+                                        'M': 'M',
+                                        'L': 'L',
+                                        'XL': 'XL'
                                     }[sizeInfo.size] || sizeInfo.size;
                                     return (
                                         <Option

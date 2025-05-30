@@ -1,11 +1,11 @@
 package com.example.kursach.domain;
 
 public enum Size {
-    XLARGE,
-    LARGE,
-    MEDIUM,
-    SMALL,
-    XSMALL;
+    XL,
+    L,
+    M,
+    S,
+    XS;
 
 
     @Override

@@ -6,7 +6,7 @@ import jakarta.persistence.Converter;
 
 import java.util.Objects;
 
-@Converter
+@Converter(autoApply = true)
 public class SexConverter implements AttributeConverter<Sex, String> {
 
     @Override

@@ -28,6 +28,9 @@ const priceSortOptions = [
     { value: 'desc', label: 'По убыванию цены' },
 ];
 
+const availableSizes = ["XS", "S", "M", "L", "XL"];
+const genderFilters = ["Мужское", "Женское"];
+
 function CatalogPage() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -35,9 +38,29 @@ function CatalogPage() {
     const [selectedGender, setSelectedGender] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [sortOrder, setSortOrder] = useState(null);
+    const [selectedSize, setSelectedSize] = useState(null);
 
     useEffect(() => {
-        axios.get('http://localhost:8080/api/clothes/')
+        setLoading(true);
+        let apiUrl = 'http://localhost:8080/api/clothes/';
+        const params = new URLSearchParams();
+
+        if (selectedGender) {
+            params.append('gender', selectedGender === "Мужское" ? "MALE" : "FEMALE");
+        }
+        if (selectedCategory) {
+            params.append('category', selectedCategory);
+        }
+        if (selectedSize) {
+            params.append('size', selectedSize);
+        }
+
+        const queryString = params.toString();
+        if (queryString) {
+            apiUrl += `?${queryString}`;
+        }
+
+        axios.get(apiUrl)
             .then(response => {
                 setProducts(response.data);
                 setLoading(false);
@@ -47,37 +70,29 @@ function CatalogPage() {
                 setLoading(false);
                 console.error('Ошибка при загрузке товаров:', error);
             });
-    }, []);
+    }, [selectedGender, selectedCategory, selectedSize]);
 
-    if (loading) {
-        return <div>Загрузка товаров...</div>;
-    }
+    const handleGenderFilterClick = (gender) => {
+        setSelectedGender(gender === selectedGender ? null : gender);
+    };
 
-    if (error) {
-        return <div>Ошибка при загрузке товаров!</div>;
-    }
+    const handleCategoryChange = (value) => {
+        setSelectedCategory(value);
+    };
+
+    const handlePriceSortChange = (value) => {
+        setSortOrder(value);
+        // TODO: Добавить сортировку по цене
+    };
+
+    const handleSizeChange = (value) => {
+        setSelectedSize(value);
+    };
 
     const rows = [];
     for (let i = 0; i < products.length; i += 3) {
         rows.push(products.slice(i, i + 3));
     }
-
-    const genderFilters = ["Мужское", "Женское", "Не выбрано"];
-
-    const handleGenderFilterClick = (gender) => {
-        setSelectedGender(gender === selectedGender ? null : gender);
-        // Здесь позже добавим логику фильтрации товаров
-    };
-
-    const handleCategoryChange = (value) => {
-        setSelectedCategory(value);
-        // Здесь позже добавим логику фильтрации по категории
-    };
-
-    const handlePriceSortChange = (value) => {
-        setSortOrder(value);
-        // Здесь позже добавим логику сортировки по цене
-    };
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -101,13 +116,6 @@ function CatalogPage() {
                         </Button>
                     ))}
                 </div>
-                {/*
-                <div>
-                    {filterTypes.map(type => (
-                        <Button key={type} style={{ marginRight: 8 }}>{type}</Button>
-                    ))}
-                </div>
-                */}
 
                 <Select
                     placeholder="Категория"
@@ -115,9 +123,21 @@ function CatalogPage() {
                     onChange={handleCategoryChange}
                     defaultValue={null}
                 >
-                    <Option value={null}>Все категории</Option>
+                    <Option value="">Все категории</Option>
                     {categoryOptions.map(option => (
                         <Option key={option.value} value={option.value}>{option.label}</Option>
+                    ))}
+                </Select>
+
+                <Select
+                    placeholder="Размер"
+                    style={{ width: 100 }}
+                    onChange={handleSizeChange}
+                    defaultValue={null}
+                >
+                    <Option value={null}>Все</Option>
+                    {availableSizes.map(size => (
+                        <Option key={size} value={size}>{size}</Option>
                     ))}
                 </Select>
 
@@ -134,15 +154,25 @@ function CatalogPage() {
             </div>
 
             <div style={{ width: '100%', maxWidth: 1200, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                {rows.map((row, index) => (
-                    <div key={index} style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
-                        {row.map(product => (
-                            <div key={product.id} style={{ margin: '0 16px' }}>
-                                <ProductCard product={product} />
-                            </div>
-                        ))}
-                    </div>
-                ))}
+                {loading ? (
+                    <div>Загрузка товаров...</div>
+                ) : error ? (
+                    <div>Ошибка загрузки товаров.</div>
+                ) : products.length === 0 ? (
+                    <Typography.Title level={3} style={{ textAlign: 'center', marginTop: 20 }}>
+                        Товары не найдены
+                    </Typography.Title>
+                ) : (
+                    rows.map((row, index) => (
+                        <div key={index} style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+                            {row.map(product => (
+                                <div key={product.id} style={{ margin: '0 16px' }}>
+                                    <ProductCard product={product} />
+                                </div>
+                            ))}
+                        </div>
+                    ))
+                )}
             </div>
         </div>
     );

@@ -29,6 +29,8 @@ public class CategoryConverter implements AttributeConverter<Category, String> {
             dbColumn = "Sweatshirt";
         } else if (category == Category.Glasses) {
             dbColumn = "Glasses";
+        } else if (category == Category.Shoes) {
+            dbColumn = "Shoes";
         } else {
             dbColumn = "Scarf";
         }

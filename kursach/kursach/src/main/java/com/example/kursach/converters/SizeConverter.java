@@ -9,13 +9,13 @@ public class SizeConverter implements AttributeConverter<Size, String> {
     @Override
     public String convertToDatabaseColumn(Size size) {
         String dbColumn;
-        if (size == Size.XSMALL) {
+        if (size == Size.XS) {
             dbColumn = "XS";
-        }else if (size == Size.SMALL) {
+        }else if (size == Size.S) {
             dbColumn = "S";
-        }else if (size == Size.MEDIUM) {
+        }else if (size == Size.M) {
             dbColumn = "M";
-        }else if (size == Size.LARGE) {
+        }else if (size == Size.L) {
             dbColumn = "L";
         }else {
             dbColumn = "XL";
@@ -26,11 +26,11 @@ public class SizeConverter implements AttributeConverter<Size, String> {
     @Override
     public Size convertToEntityAttribute(String s) {
         return switch (s) {
-            case "XS" -> Size.XSMALL;
-            case "S" -> Size.SMALL;
-            case "M" -> Size.MEDIUM;
-            case "L" -> Size.LARGE;
-            default -> Size.XLARGE;
+            case "XS" -> Size.XS;
+            case "S" -> Size.S;
+            case "M" -> Size.M;
+            case "L" -> Size.L;
+            default -> Size.XL;
         };
     }
 }

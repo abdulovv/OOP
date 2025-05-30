@@ -1,11 +1,9 @@
+// com/example/kursach/controller/ClothController.java
 package com.example.kursach.controller;
 
 import com.example.kursach.db.entity.Cloth;
 import com.example.kursach.service.ClothService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,12 +17,14 @@ public class ClothController {
     }
 
     @GetMapping("/")
-    public List<Cloth> getAllClothes() {
-        return clothService.getAllClothes();
+    public List<Cloth> getAllClothes(@RequestParam(value = "gender", required = false) String gender,
+                                     @RequestParam(value = "category", required = false) String category,
+                                     @RequestParam(value = "size", required = false) String size) {
+        return clothService.getAllClothes(gender, category, size);
     }
 
     @GetMapping("/{id}")
-    public Cloth getClothById(@PathVariable Integer id){
+    public Cloth getClothById(@PathVariable Integer id) {
         return clothService.getClothById(id);
     }
 
