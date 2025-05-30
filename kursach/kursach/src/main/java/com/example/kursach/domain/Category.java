@@ -1,9 +1,14 @@
 package com.example.kursach.domain;
 
 public enum Category {
-    HeadWear,
-    FootWear,
-    LegWear,
-    TopWear,
-    Unknown;
+    Hat,
+    Slippers,
+    Shorts,
+    Shirt,
+    Socks,
+    Jacket,
+    Pants,
+    Sweatshirt,
+    Glasses,
+    Scarf
 }

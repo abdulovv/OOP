@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @Table(name = "clothes_sizes")
 @Entity
-public class ClothSizes {
+public class ClothSize {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -20,13 +20,13 @@ public class ClothSizes {
     @Column(name = "stock_count")
     private Integer count;
 
-    public ClothSizes(Cloth cloth, Size size, Integer count) {
+    public ClothSize(Cloth cloth, Size size, Integer count) {
         this.cloth = cloth;
         this.size = size;
         this.count = count;
     }
 
-    public ClothSizes() {
+    public ClothSize() {
 
     }
 }

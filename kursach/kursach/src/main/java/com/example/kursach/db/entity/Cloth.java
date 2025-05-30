@@ -27,6 +27,8 @@ public class Cloth {
     @Column(name = "sex")
     @Convert(converter = SexConverter.class)
     private Sex sex;
+    @Column(name = "image_url")
+    private String image_url;
 
     public Cloth(String name, double price, Category category, Sex sex) {
         this.name = name;
@@ -39,6 +41,6 @@ public class Cloth {
 
     }
 
-    @OneToMany(mappedBy = "cloth", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ClothSizes> sizes;
+    //@OneToMany(mappedBy = "cloth", cascade = CascadeType.ALL, orphanRemoval = true)
+    //private List<ClothesSizes> sizes;
 }
