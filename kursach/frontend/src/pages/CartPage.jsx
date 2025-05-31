@@ -5,36 +5,34 @@ import { Link, useNavigate } from 'react-router-dom';
 
 const { Title, Paragraph } = Typography;
 
-// Временные данные корзины
-const cartItems = [
-    {
-        id: '1',
-        name: 'Футболка The North Face',
-        size: '52/54 RUS (L INT) - Бежевый',
-        price: 191.20,
-        quantity: 3,
-        image: 'https://via.placeholder.com/100x100/eee/000?Text=T-Shirt', // Замените на реальное изображение
-    },
-    {
-        id: '2',
-        name: 'Футболка The North Face',
-        size: '52/54 RUS (L INT) - Фиолетовый',
-        price: 365.67,
-        quantity: 2,
-        image: 'https://via.placeholder.com/100x100/eee/000?Text=T-Shirt2', // Замените на реальное изображение
-    },
-];
-
-function CartPage() {
+function CartPage({ cartItems, onRemoveItem, onClearCart, onQuantityChange }) {
     const navigate = useNavigate();
 
     const handleCheckout = () => {
-        // Здесь должна быть логика оформления заказа (отправка данных на сервер и т.д.)
-        // После успешного оформления перенаправляем на страницу OrderComplete
+        // Здесь должна быть логика оформления заказа
         navigate('/order-complete');
     };
 
-    if (cartItems.length === 0) {
+    const handleRemoveItem = (item) => {
+        onRemoveItem(item.id, item.size);
+    };
+
+    const handleClearCart = () => {
+        onClearCart();
+    };
+
+    const handleQuantityChange = (quantity, item) => {
+        if (quantity >= 1 && quantity <= item.availableCount) {
+            onQuantityChange(item.id, item.size, quantity);
+        } else if (quantity < 1) {
+            onQuantityChange(item.id, item.size, 1); // Минимальное значение 1
+        } else {
+            // Можно добавить визуальное уведомление о превышении доступного количества
+            onQuantityChange(item.id, item.size, item.availableCount); // Максимальное значение
+        }
+    };
+
+    if (!cartItems || cartItems.length === 0) {
         return (
             <div style={{ padding: 24, backgroundColor: '#fff', textAlign: 'center' }}>
                 <Title level={2}>Корзина пока пустая</Title>
@@ -51,23 +49,44 @@ function CartPage() {
     return (
         <div style={{ padding: 24, backgroundColor: '#fff' }}>
             <Title level={2}>Корзина ({cartItems.length} товара)</Title>
+            {cartItems.length > 0 && (
+                <div style={{ marginBottom: 16, textAlign: 'right' }}>
+                    <Button danger onClick={handleClearCart}>Очистить корзину</Button>
+                </div>
+            )}
             <List
                 itemLayout="horizontal"
                 dataSource={cartItems}
                 renderItem={item => (
-                    <List.Item>
+                    <List.Item style={{ padding: 0 }}>
                         <Card style={{ width: '100%', margin: '10px 0' }}>
-                            <div style={{ display: 'flex', alignItems: 'center' }}>
-                                <img src={item.image} alt={item.name} style={{ width: 80, height: 80, marginRight: 16, objectFit: 'cover' }} />
-                                <div style={{ flexGrow: 1 }}>
-                                    <Typography.Text strong>{item.name}</Typography.Text>
-                                    <Paragraph type="secondary">{item.size}</Paragraph>
-                                    <Typography.Text>Цена: {item.price} р.</Typography.Text>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                    {item.image_url && (
+                                        <img
+                                            src={`http://localhost:8080${item.image_url}`}
+                                            alt={item.name}
+                                            style={{ width: 80, height: 80, marginRight: 16, objectFit: 'cover' }}
+                                        />
+                                    )
+                                }
+                                    <div style={{ flexGrow: 1 }}>
+                                        <Typography.Text strong>{item.name}</Typography.Text>
+                                        <Paragraph type="secondary">{item.size}</Paragraph>
+                                        <Typography.Text>Цена: {item.price} р.</Typography.Text>
+                                    </div>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center' }}>
                                     <Typography.Text style={{ marginRight: 8 }}>Кол-во:</Typography.Text>
-                                    <InputNumber min={1} defaultValue={item.quantity} style={{ width: 70, marginRight: 16 }} />
+                                    <InputNumber
+                                        min={1}
+                                        max={item.availableCount}
+                                        defaultValue={item.quantity}
+                                        style={{ width: 70, marginRight: 16 }}
+                                        onChange={(quantity) => handleQuantityChange(quantity, item)}
+                                    />
                                     <Typography.Text strong>{(item.price * item.quantity).toFixed(2)} р.</Typography.Text>
+                                    <Button size="small" danger style={{ marginLeft: 16 }} onClick={() => handleRemoveItem(item)}>Удалить</Button>
                                 </div>
                             </div>
                         </Card>

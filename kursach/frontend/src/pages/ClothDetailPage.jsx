@@ -1,6 +1,7 @@
+// src/pages/ClothDetailPage.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { Typography, Image, Button, Spin, Radio, Select } from 'antd';
+import { Typography, Image, Button, Spin, Select } from 'antd';
 import axios from 'axios';
 
 const { Title, Paragraph } = Typography;
@@ -10,7 +11,6 @@ const categoryMap = {
     "Shirt": "Футболка",
     "Pants": "Штаны",
     "Shoes": "Обувь",
-    "Accessories": "Аксессуары",
     "Socks": "Носки",
     "Glasses": "Очки",
     "Scarf":"Шарф",
@@ -23,7 +23,7 @@ const categoryMap = {
 
 const availableSizesOrder = ['XS', 'S', 'M', 'L', 'XL'];
 
-function ClothDetailPage() {
+function ClothDetailPage({ onAddToCart }) {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
     const [sizes, setSizes] = useState([]);
@@ -32,6 +32,8 @@ function ClothDetailPage() {
     const [sizesLoading, setSizesLoading] = useState(true);
     const [sizesError, setSizesError] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
+    const [addToCartButtonText, setAddToCartButtonText] = useState('Добавить в корзину');
+    const [isAddingToCart, setIsAddingToCart] = useState(false);
 
     useEffect(() => {
         const fetchProductDetails = async () => {
@@ -71,6 +73,29 @@ function ClothDetailPage() {
         fetchProductSizes();
     }, [id]);
 
+    const handleSizeChange = (value) => {
+        setSelectedSize(value);
+    };
+
+    const handleAddToCartClick = () => {
+        if (product && selectedSize) {
+            const selectedSizeInfo = sizes.find(s => s.size === selectedSize);
+            if (selectedSizeInfo) {
+                onAddToCart(product, selectedSize, selectedSizeInfo.count);
+                setIsAddingToCart(true);
+                setAddToCartButtonText('Добавляем...');
+                setTimeout(() => {
+                    setAddToCartButtonText('Добавить в корзину');
+                    setIsAddingToCart(false);
+                }, 1000);
+            } else {
+                console.log('Информация о размере не найдена');
+            }
+        } else if (!selectedSize) {
+            console.log('Пожалуйста, выберите размер');
+        }
+    };
+
     if (loading || sizesLoading) {
         return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}><Spin size="large" /></div>;
     }
@@ -86,11 +111,6 @@ function ClothDetailPage() {
     if (!product) {
         return <div>Товар не найден</div>;
     }
-
-    const handleSizeChange = (value) => {
-        setSelectedSize(value);
-        console.log('Выбранный размер:', value);
-    };
 
     const scaleFactor = 1;
 
@@ -141,8 +161,14 @@ function ClothDetailPage() {
                         </Select>
                     </div>
 
-                    <Button type="primary" size="large" style={{ marginTop: 24 }} disabled={!selectedSize}>
-                        Добавить в корзину
+                    <Button
+                        type="primary"
+                        size="large"
+                        style={{ marginTop: 24 }}
+                        disabled={!selectedSize || isAddingToCart}
+                        onClick={handleAddToCartClick}
+                    >
+                        {addToCartButtonText}
                     </Button>
                 </div>
             </div>
