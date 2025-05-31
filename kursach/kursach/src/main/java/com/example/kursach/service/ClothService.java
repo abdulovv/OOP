@@ -8,9 +8,11 @@ import com.example.kursach.db.entity.repository.ClothSizeRepository;
 import com.example.kursach.domain.Category;
 import com.example.kursach.domain.Sex;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +28,7 @@ public class ClothService {
     }
 
     @Transactional(readOnly = true)
-    public List<Cloth> getAllClothes(String gender, String category, String size) {
+    public List<Cloth> getAllClothes(String gender, String category, String size, String sort, String order) {
         List<Cloth> clothes = clothRepository.findAll();
 
         if (gender != null && !gender.isEmpty()) {
@@ -55,9 +57,17 @@ public class ClothService {
             clothes = clothes.stream()
                     .filter(cloth -> {
                         List<ClothSize> sizes = clothSizeRepository.findClothSizesByCloth_Id(cloth.getId());
-                        return sizes.stream().anyMatch(clothSize -> clothSize.getSize().name().equals(size) && clothSize.getCount() > 0);
+                        return sizes.stream().anyMatch(clothSize -> clothSize.getSize().name().equalsIgnoreCase(size) && clothSize.getCount() > 0);
                     })
                     .collect(Collectors.toList());
+        }
+
+        if (sort != null && sort.equals("price")) {
+            if (order != null && order.equalsIgnoreCase("asc")) {
+                clothes.sort(Comparator.comparing(Cloth::getPrice));
+            } else if (order != null && order.equalsIgnoreCase("desc")) {
+                clothes.sort(Comparator.comparing(Cloth::getPrice).reversed());
+            }
         }
 
         return clothes;

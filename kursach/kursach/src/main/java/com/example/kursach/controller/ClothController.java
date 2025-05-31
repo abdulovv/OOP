@@ -19,8 +19,10 @@ public class ClothController {
     @GetMapping("/")
     public List<Cloth> getAllClothes(@RequestParam(value = "gender", required = false) String gender,
                                      @RequestParam(value = "category", required = false) String category,
-                                     @RequestParam(value = "size", required = false) String size) {
-        return clothService.getAllClothes(gender, category, size);
+                                     @RequestParam(value = "size", required = false) String size,
+                                     @RequestParam(value = "sort", required = false) String sort,
+                                     @RequestParam(value = "order", required = false) String order) {
+        return clothService.getAllClothes(gender, category, size, sort, order);
     }
 
     @GetMapping("/{id}")

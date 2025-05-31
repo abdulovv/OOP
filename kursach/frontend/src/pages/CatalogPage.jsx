@@ -54,6 +54,10 @@ function CatalogPage() {
         if (selectedSize) {
             params.append('size', selectedSize);
         }
+        if (sortOrder) {
+            params.append('sort', 'price');
+            params.append('order', sortOrder);
+        }
 
         const queryString = params.toString();
         if (queryString) {
@@ -70,7 +74,7 @@ function CatalogPage() {
                 setLoading(false);
                 console.error('Ошибка при загрузке товаров:', error);
             });
-    }, [selectedGender, selectedCategory, selectedSize]);
+    }, [selectedGender, selectedCategory, selectedSize, sortOrder]); // Добавили sortOrder в зависимости
 
     const handleGenderFilterClick = (gender) => {
         setSelectedGender(gender === selectedGender ? null : gender);
@@ -82,7 +86,6 @@ function CatalogPage() {
 
     const handlePriceSortChange = (value) => {
         setSortOrder(value);
-        // TODO: Добавить сортировку по цене
     };
 
     const handleSizeChange = (value) => {
@@ -96,6 +99,7 @@ function CatalogPage() {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            {/* ... (весь ваш JSX код) */}
             <div style={{ marginBottom: 16, width: '100%', maxWidth: 1200, display: 'flex', justifyContent: 'center' }}>
                 <Search placeholder="Поиск товаров" onSearch={value => console.log(value)} style={{ width: '30%', minWidth: '200px' }} />
             </div>
@@ -123,7 +127,7 @@ function CatalogPage() {
                     onChange={handleCategoryChange}
                     defaultValue={null}
                 >
-                    <Option value="">Все категории</Option>
+                    <Option value={null}>Все категории</Option>
                     {categoryOptions.map(option => (
                         <Option key={option.value} value={option.value}>{option.label}</Option>
                     ))}
@@ -154,25 +158,15 @@ function CatalogPage() {
             </div>
 
             <div style={{ width: '100%', maxWidth: 1200, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                {loading ? (
-                    <div>Загрузка товаров...</div>
-                ) : error ? (
-                    <div>Ошибка загрузки товаров.</div>
-                ) : products.length === 0 ? (
-                    <Typography.Title level={3} style={{ textAlign: 'center', marginTop: 20 }}>
-                        Товары не найдены
-                    </Typography.Title>
-                ) : (
-                    rows.map((row, index) => (
-                        <div key={index} style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
-                            {row.map(product => (
-                                <div key={product.id} style={{ margin: '0 16px' }}>
-                                    <ProductCard product={product} />
-                                </div>
-                            ))}
-                        </div>
-                    ))
-                )}
+                {rows.map((row, index) => (
+                    <div key={index} style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+                        {row.map(product => (
+                            <div key={product.id} style={{ margin: '0 16px' }}>
+                                <ProductCard product={product} />
+                            </div>
+                        ))}
+                    </div>
+                ))}
             </div>
         </div>
     );
