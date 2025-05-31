@@ -39,6 +39,7 @@ function CatalogPage() {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [sortOrder, setSortOrder] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         setLoading(true);
@@ -58,6 +59,9 @@ function CatalogPage() {
             params.append('sort', 'price');
             params.append('order', sortOrder);
         }
+        if (searchQuery && searchQuery.trim() !== '') {
+            params.append('query', searchQuery);
+        }
 
         const queryString = params.toString();
         if (queryString) {
@@ -74,7 +78,7 @@ function CatalogPage() {
                 setLoading(false);
                 console.error('Ошибка при загрузке товаров:', error);
             });
-    }, [selectedGender, selectedCategory, selectedSize, sortOrder]); // Добавили sortOrder в зависимости
+    }, [selectedGender, selectedCategory, selectedSize, sortOrder, searchQuery]);
 
     const handleGenderFilterClick = (gender) => {
         setSelectedGender(gender === selectedGender ? null : gender);
@@ -92,6 +96,10 @@ function CatalogPage() {
         setSelectedSize(value);
     };
 
+    const handleSearch = (value) => {
+        setSearchQuery(value);
+    };
+
     const rows = [];
     for (let i = 0; i < products.length; i += 3) {
         rows.push(products.slice(i, i + 3));
@@ -99,9 +107,12 @@ function CatalogPage() {
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            {/* ... (весь ваш JSX код) */}
             <div style={{ marginBottom: 16, width: '100%', maxWidth: 1200, display: 'flex', justifyContent: 'center' }}>
-                <Search placeholder="Поиск товаров" onSearch={value => console.log(value)} style={{ width: '30%', minWidth: '200px' }} />
+                <Search
+                    placeholder="Поиск товаров"
+                    onSearch={handleSearch}
+                    style={{ width: '30%', minWidth: '200px' }}
+                />
             </div>
 
             <div style={{ marginBottom: 16, display: 'flex', gap: 16, alignItems: 'center', justifyContent: 'center' }}>

@@ -8,7 +8,6 @@ import com.example.kursach.db.entity.repository.ClothSizeRepository;
 import com.example.kursach.domain.Category;
 import com.example.kursach.domain.Sex;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +27,7 @@ public class ClothService {
     }
 
     @Transactional(readOnly = true)
-    public List<Cloth> getAllClothes(String gender, String category, String size, String sort, String order) {
+    public List<Cloth> getAllClothes(String gender, String category, String size, String sort, String order, String query) {
         List<Cloth> clothes = clothRepository.findAll();
 
         if (gender != null && !gender.isEmpty()) {
@@ -68,6 +67,16 @@ public class ClothService {
             } else if (order != null && order.equalsIgnoreCase("desc")) {
                 clothes.sort(Comparator.comparing(Cloth::getPrice).reversed());
             }
+        }
+
+        if (query != null && !query.isEmpty()) {
+            String lowerCaseQuery = query.toLowerCase();
+            clothes = clothes.stream()
+                    .filter(cloth ->
+                            cloth.getName().toLowerCase().contains(lowerCaseQuery) ||
+                                    (cloth.getName() != null && cloth.getName() .toLowerCase().contains(lowerCaseQuery))
+                    )
+                    .collect(Collectors.toList());
         }
 
         return clothes;

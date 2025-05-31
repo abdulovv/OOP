@@ -21,8 +21,9 @@ public class ClothController {
                                      @RequestParam(value = "category", required = false) String category,
                                      @RequestParam(value = "size", required = false) String size,
                                      @RequestParam(value = "sort", required = false) String sort,
-                                     @RequestParam(value = "order", required = false) String order) {
-        return clothService.getAllClothes(gender, category, size, sort, order);
+                                     @RequestParam(value = "order", required = false) String order,
+                                     @RequestParam(value = "query", required = false) String query) {
+        return clothService.getAllClothes(gender, category, size, sort, order, query);
     }
 
     @GetMapping("/{id}")
