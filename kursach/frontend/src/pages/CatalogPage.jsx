@@ -42,7 +42,12 @@ function CatalogPage() {
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
+        fetchProducts();
+    }, [selectedGender, selectedCategory, selectedSize, sortOrder, searchQuery]);
+
+    const fetchProducts = async () => {
         setLoading(true);
+        setError(null);
         let apiUrl = 'http://localhost:8080/api/clothes/';
         const params = new URLSearchParams();
 
@@ -78,7 +83,7 @@ function CatalogPage() {
                 setLoading(false);
                 console.error('Ошибка при загрузке товаров:', error);
             });
-    }, [selectedGender, selectedCategory, selectedSize, sortOrder, searchQuery]);
+    };
 
     const handleGenderFilterClick = (gender) => {
         setSelectedGender(gender === selectedGender ? null : gender);
@@ -98,6 +103,14 @@ function CatalogPage() {
 
     const handleSearch = (value) => {
         setSearchQuery(value);
+    };
+
+    const handleResetFilters = () => {
+        setSelectedGender(null);
+        setSelectedCategory(null);
+        setSortOrder(null);
+        setSelectedSize(null);
+        setSearchQuery('');
     };
 
     const rows = [];
@@ -136,7 +149,7 @@ function CatalogPage() {
                     placeholder="Категория"
                     style={{ width: 150 }}
                     onChange={handleCategoryChange}
-                    defaultValue={null}
+                    value={selectedCategory}
                 >
                     <Option value={null}>Все категории</Option>
                     {categoryOptions.map(option => (
@@ -148,7 +161,7 @@ function CatalogPage() {
                     placeholder="Размер"
                     style={{ width: 100 }}
                     onChange={handleSizeChange}
-                    defaultValue={null}
+                    value={selectedSize}
                 >
                     <Option value={null}>Все</Option>
                     {availableSizes.map(size => (
@@ -156,16 +169,37 @@ function CatalogPage() {
                     ))}
                 </Select>
 
-                <Select
-                    placeholder="Сортировка"
-                    style={{ width: 200 }}
-                    onChange={handlePriceSortChange}
-                    defaultValue={null}
-                >
-                    {priceSortOptions.map(option => (
-                        <Option key={option.value} value={option.value}>{option.label}</Option>
-                    ))}
-                </Select>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <Select
+                        placeholder="Сортировка"
+                        style={{ width: 200, marginRight: 8 }}
+                        onChange={handlePriceSortChange}
+                        value={sortOrder}
+                    >
+                        {priceSortOptions.map(option => (
+                            <Option key={option.value} value={option.value}>{option.label}</Option>
+                        ))}
+                    </Select>
+                    <span
+                        onClick={handleResetFilters}
+                        style={{
+                            cursor: 'pointer',
+                            fontSize: '1.2em',
+                            color: 'rgba(0, 0, 0, 0.45)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: '24px',
+                            height: '24px',
+                            transition: 'transform 0.1s ease-in-out',
+                        }}
+                        onMouseDown={e => e.currentTarget.style.transform = 'scale(0.8)'}
+                        onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
+                        onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+                    >
+                        &#x2715;
+                    </span>
+                </div>
             </div>
 
             <div style={{ width: '100%', maxWidth: 1200, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
