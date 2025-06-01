@@ -74,4 +74,8 @@ public class OrderService {
         Optional<ClothSize> foundClothSize = clothSizeRepository.findByClothIdAndSize(clothSize.getCloth().getId(), clothSize.getSize());
         return foundClothSize.map(ClothSize::getId).orElse(null);
     }
+
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
 }

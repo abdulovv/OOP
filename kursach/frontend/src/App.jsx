@@ -9,7 +9,9 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import CartPage from './pages/CartPage';
 import OrderCompletePage from './pages/OrderCompletePage';
-import OrderSuccessPage from './pages/OrderSuccessPage'; // Импортируем новую страницу
+import OrderSuccessPage from './pages/OrderSuccessPage';
+import StatisticsPage from './pages/StatisticsPage';
+import OrdersPage from "./pages/OrdersPage"; // Импортируем StatisticsPage
 
 const { Content } = Layout;
 
@@ -84,6 +86,8 @@ function App() {
                             />
                             <Route path="/order-complete" element={<OrderCompletePage onClearCart={clearCart} />} />
                             <Route path="/order-success" element={<OrderSuccessPage />} />
+                            <Route path="/statistics" element={<StatisticsPage />} /> {/* Новый маршрут для статистики */}
+                            <Route path="/orders" element={<OrdersPage />} />
                             <Route path="*" element={<NotFoundPage />} />
                         </Routes>
                     </div>

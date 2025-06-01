@@ -73,7 +73,7 @@ function CartPage({ cartItems, onRemoveItem, onClearCart, onQuantityChange }) {
                                     <div style={{ flexGrow: 1 }}>
                                         <Typography.Text strong>{item.name}</Typography.Text>
                                         <Paragraph type="secondary">{item.size}</Paragraph>
-                                        <Typography.Text>Цена: {item.price} р.</Typography.Text>
+                                        <Typography.Text>Цена: {item.price} $.</Typography.Text>
                                     </div>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -85,7 +85,7 @@ function CartPage({ cartItems, onRemoveItem, onClearCart, onQuantityChange }) {
                                         style={{ width: 70, marginRight: 16 }}
                                         onChange={(quantity) => handleQuantityChange(quantity, item)}
                                     />
-                                    <Typography.Text strong>{(item.price * item.quantity).toFixed(2)} р.</Typography.Text>
+                                    <Typography.Text strong>{(item.price * item.quantity).toFixed(2)} $.</Typography.Text>
                                     <Button size="small" danger style={{ marginLeft: 16 }} onClick={() => handleRemoveItem(item)}>Удалить</Button>
                                 </div>
                             </div>
@@ -94,7 +94,7 @@ function CartPage({ cartItems, onRemoveItem, onClearCart, onQuantityChange }) {
                 )}
                 footer={
                     <div style={{ textAlign: 'right', marginTop: 24 }}>
-                        <Typography.Title level={3}>Итого: {totalPrice.toFixed(2)} р.</Typography.Title>
+                        <Typography.Title level={3}>Итого: {totalPrice.toFixed(2)} $.</Typography.Title>
                         <Button type="primary" size="large" onClick={handleCheckout}>Оформить заказ</Button>
                     </div>
                 }
