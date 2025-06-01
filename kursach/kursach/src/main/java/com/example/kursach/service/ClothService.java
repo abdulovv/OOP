@@ -72,12 +72,12 @@ public class ClothService {
         if (query != null && !query.isEmpty()) {
             String lowerCaseQuery = query.toLowerCase();
             clothes = clothes.stream()
-                    .filter(cloth ->
-                            cloth.getName().toLowerCase().contains(lowerCaseQuery) ||
-                                    (cloth.getName() != null && cloth.getName() .toLowerCase().contains(lowerCaseQuery))
+                    .filter(cloth -> (
+                            cloth.getName() != null &&
+                            cloth.getName().toLowerCase().contains(lowerCaseQuery))
                     )
                     .collect(Collectors.toList());
-        }
+        }//поправка была
 
         return clothes;
     }

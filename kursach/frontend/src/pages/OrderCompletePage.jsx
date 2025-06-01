@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Typography, Input, Button, Form } from 'antd';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const { Title } = Typography;
 
@@ -10,22 +11,27 @@ function OrderCompletePage() {
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
 
-    const onFinish = (values) => {
+    const onFinish = async (values) => {
         setLoading(true);
-        console.log('Данные заказа:', values);
         const cartItems = JSON.parse(localStorage.getItem('shoppingCart') || '[]');
-        console.log('Товары в корзине:', cartItems);
 
-        // TODO: Отправить данные заказа на бэкенд
-        // Включая values (full_name, contact_info) и cartItems
+        try {
+            const response = await axios.post('http://localhost:8080/api/orders', {
+                customerInfo: values,
+                items: cartItems,
+            });
 
-        // Очищаем корзину локально
-        localStorage.removeItem('shoppingCart');
-
-        setTimeout(() => {
+            console.log('Заказ успешно отправлен:', response.data);
+            localStorage.removeItem('shoppingCart');
             setLoading(false);
-            navigate('/order-success'); // Перенаправление на страницу успешного заказа
-        }, 2000);
+            navigate('/order-success');
+            // TODO: Обработать ответ от сервера, возможно, показать номер заказа
+
+        } catch (error) {
+            console.error('Ошибка при отправке заказа:', error);
+            setLoading(false);
+            // TODO: Показать сообщение об ошибке пользователю
+        }
     };
 
     const onFinishFailed = (errorInfo) => {
