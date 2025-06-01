@@ -64,7 +64,7 @@ function App() {
     return (
         <Router>
             <Layout style={{ minHeight: '100vh' }}>
-                <Header />
+                <Header cartItems={cart} />
                 <Content style={{ padding: '0 50px', paddingTop: 0 }}>
                     <div className="site-layout-content" style={{ padding: 24, background: '#fff', minHeight: 380 }}>
                         <Routes>
@@ -82,8 +82,8 @@ function App() {
                                     onQuantityChange={updateItemQuantity}
                                 />}
                             />
-                            <Route path="/order-complete" element={<OrderCompletePage />} />
-                            <Route path="/order-success" element={<OrderSuccessPage />} /> {/* Добавляем новый маршрут */}
+                            <Route path="/order-complete" element={<OrderCompletePage onClearCart={clearCart} />} />
+                            <Route path="/order-success" element={<OrderSuccessPage />} />
                             <Route path="*" element={<NotFoundPage />} />
                         </Routes>
                     </div>

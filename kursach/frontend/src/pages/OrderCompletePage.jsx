@@ -6,7 +6,7 @@ import axios from 'axios';
 
 const { Title } = Typography;
 
-function OrderCompletePage() {
+function OrderCompletePage({ onClearCart }) {
     const navigate = useNavigate();
     const [form] = Form.useForm();
     const [loading, setLoading] = useState(false);
@@ -22,11 +22,12 @@ function OrderCompletePage() {
             });
 
             console.log('Заказ успешно отправлен:', response.data);
+            console.log('Очистка корзины...');
             localStorage.removeItem('shoppingCart');
+            onClearCart();
             setLoading(false);
             navigate('/order-success');
             // TODO: Обработать ответ от сервера, возможно, показать номер заказа
-
         } catch (error) {
             console.error('Ошибка при отправке заказа:', error);
             setLoading(false);

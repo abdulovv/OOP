@@ -1,7 +1,8 @@
 // src/pages/ClothDetailPage.jsx
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { Typography, Image, Button, Spin, Select } from 'antd';
+import { useParams, useNavigate } from 'react-router-dom'; // Импортируем useNavigate
+import { Typography, Image, Button, Spin, Select } from 'antd'; // Импортируем Space
+import { ArrowLeftOutlined } from '@ant-design/icons'; // Импортируем иконку стрелки назад
 import axios from 'axios';
 
 const { Title, Paragraph } = Typography;
@@ -25,6 +26,7 @@ const availableSizesOrder = ['XS', 'S', 'M', 'L', 'XL'];
 
 function ClothDetailPage({ onAddToCart }) {
     const { id } = useParams();
+    const navigate = useNavigate(); // Инициализируем useNavigate
     const [product, setProduct] = useState(null);
     const [sizes, setSizes] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -96,6 +98,10 @@ function ClothDetailPage({ onAddToCart }) {
         }
     };
 
+    const handleGoBack = () => {
+        navigate(-1); // Переход на предыдущую страницу в истории браузера
+    };
+
     if (loading || sizesLoading) {
         return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}><Spin size="large" /></div>;
     }
@@ -115,7 +121,10 @@ function ClothDetailPage({ onAddToCart }) {
     const scaleFactor = 1;
 
     return (
-        <div style={{ padding: 24, backgroundColor: '#fff', display: 'flex', justifyContent: 'center', alignItems: 'flex-start', transform: `scale(${scaleFactor})`, transformOrigin: 'top center' }}>
+        <div style={{ padding: 24, backgroundColor: '#fff', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', transform: `scale(${scaleFactor})`, transformOrigin: 'top center' }}>
+            <Button icon={<ArrowLeftOutlined />} onClick={handleGoBack} style={{ marginBottom: 16 }}>
+                Назад
+            </Button>
             <div style={{ display: 'flex', gap: 32 }}>
                 {product.image_url && (
                     <Image
