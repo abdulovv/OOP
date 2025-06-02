@@ -1,6 +1,7 @@
 package com.example.kursach.controller;
 
 import com.example.kursach.db.entity.Order;
+import com.example.kursach.db.entity.OrderItem;
 import com.example.kursach.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,13 @@ public class OrderController {
 
     @GetMapping
     public ResponseEntity<List<Order>> getAllOrders() {
-        List<Order> orders = orderService.getAllOrders(); // Вам нужно создать этот метод в OrderService
+        List<Order> orders = orderService.getAllOrders();
         return new ResponseEntity<>(orders, HttpStatus.OK);
+    }
+
+    @GetMapping("/{orderId}/items")
+    public ResponseEntity<List<OrderService.OrderItemDTO>> getOrderItems(@PathVariable Integer orderId) {
+        List<OrderService.OrderItemDTO> orderItems = orderService.getOrderItemsByOrderId(orderId);
+        return new ResponseEntity<>(orderItems, HttpStatus.OK);
     }
 }
