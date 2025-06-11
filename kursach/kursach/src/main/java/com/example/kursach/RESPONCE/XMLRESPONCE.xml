@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<clothes>
+    <cloth>
+        <category>Shirt</category>
+        <id>38</id>
+        <image_url>/images/NikeTShirt38.avif</image_url>
+        <name>Nike Sportswear
+Max90 T-shirt voor heren</name>
+        <price>89.99</price>
+        <sex>MALE</sex>
+    </cloth>
+    <cloth>
+        <category>Shirt</category>
+        <id>39</id>
+        <image_url>/images/AdidasTshirt39.avif</image_url>
+        <name>Adidas Classics 3-Stripes Tee</name>
+        <price>56.55</price>
+        <sex>MALE</sex>
+    </cloth>
+    <cloth>
+        <category>Glasses</category>
+        <id>40</id>
+        <image_url>/images/CalvinKleinGlasses40.png</image_url>
+        <name>Calvin Klein Sunglasses</name>
+        <price>129.99</price>
+        <sex>MALE</sex>
+    </cloth>
+    <cloth>
+        <category>Shorts</category>
+        <id>41</id>
+        <image_url>/images/JordanShorts41.avif</image_url>
+        <name>Jordan Brooklyn Fleece Shorts – Donna</name>
+        <price>85.0</price>
+        <sex>FEMALE</sex>
+    </cloth>
+</clothes>
